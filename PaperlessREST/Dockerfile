@@ -1,25 +1,29 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER app
-WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
-
+# ===== Build Stage =====
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["PaperlessREST.csproj", "."]
-RUN dotnet restore "./PaperlessREST.csproj"
+
+# Copy project files
+COPY PaperlessREST/PaperlessREST.API.csproj PaperlessREST/
+COPY PaperlessRest.Application/PaperlessRest.Application.csproj PaperlessRest.Application/
+COPY PaperlessREST.Domain/PaperlessREST.Domain.csproj PaperlessREST.Domain/
+COPY PaperlessREST.Infrastructure/PaperlessREST.Infrastructure.csproj PaperlessREST.Infrastructure/
+
+# Restore dependencies for API project
+RUN dotnet restore "PaperlessREST/PaperlessREST.API.csproj"
+
+# Copy the rest of the source code
 COPY . .
-WORKDIR "/src/."
-RUN dotnet build "./PaperlessREST.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./PaperlessREST.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+# Publish the API project explicitly
+WORKDIR "/src/PaperlessREST"
+RUN dotnet publish "PaperlessREST.API.csproj" -c Release -o /app/publish
 
-FROM base AS final
+# ===== Runtime Stage =====
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "PaperlessREST.dll"]
+
+# Copy the published files from the build stage
+COPY --from=build /app/publish .
+
+# Run the API directly
+ENTRYPOINT ["dotnet", "PaperlessREST.API.dll"]

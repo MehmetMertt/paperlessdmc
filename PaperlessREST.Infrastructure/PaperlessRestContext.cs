@@ -20,5 +20,7 @@ namespace PaperlessREST.Infrastructure
         }
 
         public DbSet<MetaData> MetaDatas => Set<MetaData>();
+        public DbSet<User> Users => Set<User>();
+
     }
 }

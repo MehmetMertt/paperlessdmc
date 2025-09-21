@@ -1,6 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Validations;
+using PaperlessRest.Application.DTOs;
 using PaperlessREST.Domain.Entities;
+using PaperlessREST.Infrastructure.Service;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection.Metadata.Ecma335;
 
 namespace PaperlessREST.Controllers
@@ -11,33 +16,54 @@ namespace PaperlessREST.Controllers
     public class MetaDataController : Controller
     {
 
+        private readonly IMetaDataService _metaDataService;
+
+        public MetaDataController(IMetaDataService metaDataService)
+        {
+            _metaDataService = metaDataService;
+        }
+
+
         // GET: MetaDataController
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public Task<ActionResult<List<MetaData>>> GetMetaDatasAsync()
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public ActionResult<List<MetaData>> GetMetaDatas()
         {
+            var metaDatas = _metaDataService.GetAllMetaData();
 
+            if (!metaDatas.Any())
+            {
+                return NoContent();
+            }
 
-
-            return Task.FromResult<ActionResult<List<MetaData>>>(Ok(list));
+            return Ok(metaDatas);
         }
 
         // GET: MetaDataController/<guuid>
-        [HttpGet("{guuid}")]
+        [HttpGet("{guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public Task<ActionResult<MetaData>> GetMetaDataAsync(int guuid)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public ActionResult<MetaData> MetaDataAsync(Guid guid)
         {
-            MetaData metaData = new MetaData
-            {
-                Author = "Mehmet",
-                
-                FileExtension = ".txt",
-                Id = Guid.NewGuid(),
-                Name = "Teststoff",
-                OwnerId = 1,
-                LastModified = DateTime.Now
-            };
-            return Task.FromResult<ActionResult<MetaData>>(Ok(metaData));
+            var metaData = _metaDataService.GetMetaDataByGuid(guid);
+
+            if (metaData == null) return NoContent();
+
+            return Ok(metaData);
+
+        }
+
+
+        [HttpPost()]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult CreateMetaData(CreateMetaDataCommand command)
+        {
+           // ValidationResult result = validator.Validate(command);
+            var createdMetaData = _metaDataService.CreateMetaData(command);
+            return CreatedAtAction(nameof(GetMetaDatas), new { guid = createdMetaData.Id },
+                new MetaDataDto(createdMetaData.Id,command.OwnerId,command.Name,command.FileExtension,command.Author));
         }
     }
 }

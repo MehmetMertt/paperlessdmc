@@ -1,9 +1,12 @@
-﻿using PaperlessRest.Application.DTOs;
+﻿using Microsoft.EntityFrameworkCore;
+using PaperlessRest.Application.DTOs;
 using PaperlessREST.Domain.Entities;
+using System.ComponentModel.DataAnnotations;
+using System.Data;
 
 namespace PaperlessREST.Infrastructure.Repositories
 {
-    public class MetadataRepository
+    public class MetadataRepository : IMetadataRepository
     {
 
         private readonly PaperlessRestContext _context;
@@ -13,21 +16,49 @@ namespace PaperlessREST.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<List<MetaDataDto>> getAllBooks()
-        {
-            var list = new List<MetaDataDto>
-            {
-                new MetaDataDto
-                {
-                    Author = "Mehmet",
-                    FileExtension = ".txt",
-                    Name = "Teststoff",
-                    OwnerId = 1,
-                }
-            };
+        public IQueryable<MetaData> GetAll() => _context.MetaDatas.AsQueryable();
 
-            return await Task.FromResult(list);
+        public MetaData? GetByGuid(Guid guid) => _context.MetaDatas.SingleOrDefault(m => m.Id == guid);
+
+        public MetaData? GetByUser(Guid userId) => _context.MetaDatas.SingleOrDefault(m => m.OwnerId == userId);
+
+        public void Add(MetaData metadata)
+        {
+            try
+            {
+                _context.MetaDatas.Add(metadata);
+                _context.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new ValidationException($"Failed to add Metadata to database: {ex.Message}");
+            }
+
         }
 
+        public void Update(MetaData metaData)
+        {
+
+            //TODO: https://www.learnentityframeworkcore.com/concurrency
+            try
+            {
+
+                _context.MetaDatas.Update(metaData);
+                _context.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                throw new Exception("Not found");
+
+                //  throw new EntityNotFoundException();
+
+            }
+        }
+
+        public void Delete(MetaData metaData)
+        {
+            _context.MetaDatas.Remove(metaData);
+            _context.SaveChanges();
+        }
     }
 }
