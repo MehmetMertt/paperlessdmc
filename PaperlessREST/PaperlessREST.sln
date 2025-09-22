@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34607.119
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaperlessREST.API", "PaperlessREST.API.csproj", "{351BB555-DBDD-4FE8-9881-861E22AF15B3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaperlessREST.Domain", "..\PaperlessREST.Domain\PaperlessREST.Domain.csproj", "{CCBAABA5-5E16-47F1-84A5-9AE3067BD80F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaperlessREST.Infrastructure", "..\PaperlessREST.Infrastructure\PaperlessREST.Infrastructure.csproj", "{04972BB9-89DB-483B-A2F8-5C58F15FC2F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperlessRest.Application", "..\PaperlessRest.Application\PaperlessRest.Application.csproj", "{43C20438-AB22-4E19-9AD4-5EDB5C6AE3A7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{351BB555-DBDD-4FE8-9881-861E22AF15B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{351BB555-DBDD-4FE8-9881-861E22AF15B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{351BB555-DBDD-4FE8-9881-861E22AF15B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{351BB555-DBDD-4FE8-9881-861E22AF15B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCBAABA5-5E16-47F1-84A5-9AE3067BD80F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCBAABA5-5E16-47F1-84A5-9AE3067BD80F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCBAABA5-5E16-47F1-84A5-9AE3067BD80F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCBAABA5-5E16-47F1-84A5-9AE3067BD80F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04972BB9-89DB-483B-A2F8-5C58F15FC2F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04972BB9-89DB-483B-A2F8-5C58F15FC2F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04972BB9-89DB-483B-A2F8-5C58F15FC2F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04972BB9-89DB-483B-A2F8-5C58F15FC2F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43C20438-AB22-4E19-9AD4-5EDB5C6AE3A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43C20438-AB22-4E19-9AD4-5EDB5C6AE3A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43C20438-AB22-4E19-9AD4-5EDB5C6AE3A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43C20438-AB22-4E19-9AD4-5EDB5C6AE3A7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {54CD18AA-422F-4A7A-AC5A-9057906F972D}
+	EndGlobalSection
+EndGlobal
