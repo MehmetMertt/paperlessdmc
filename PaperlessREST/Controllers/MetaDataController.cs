@@ -2,13 +2,14 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Validations;
-using PaperlessRest.Application.DTOs;
+using PaperlessREST.Application.DTOs;
+using PaperlessREST.Application.Commands;
 using PaperlessREST.Domain.Entities;
-using PaperlessREST.Infrastructure.Service;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection.Metadata.Ecma335;
+using PaperlessREST.DataAccess.Service;
 
-namespace PaperlessREST.Controllers
+namespace PaperlessREST.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

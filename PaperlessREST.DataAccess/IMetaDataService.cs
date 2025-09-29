@@ -1,6 +1,7 @@
-﻿using PaperlessRest.Application.DTOs;
+﻿using PaperlessREST.Application.DTOs;
+using PaperlessREST.Application.Commands;
 
-namespace PaperlessREST.Infrastructure.Service
+namespace PaperlessREST.DataAccess.Service
 {
     public interface IMetaDataService
     {

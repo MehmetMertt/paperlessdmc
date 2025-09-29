@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PaperlessRest.Application.DTOs;
+using PaperlessREST.Application.DTOs;
+using PaperlessREST.Application.Commands;
 using PaperlessREST.Domain.Entities;
 using PaperlessREST.Infrastructure.Repositories;
 using System;
@@ -8,11 +9,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PaperlessREST.DataAccess.Service;
 
-namespace PaperlessREST.Infrastructure.Service
+namespace PaperlessREST.DataAccess.Service
 {
-
-
     public class MetaDataService : IMetaDataService
     {
         private readonly IMetadataRepository _metadataRepository;

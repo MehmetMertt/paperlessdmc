@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using PaperlessREST.Infrastructure;
 using PaperlessREST.Infrastructure.Repositories;
-using PaperlessREST.Infrastructure.Service;
+using PaperlessREST.DataAccess.Service;
 
 var builder = WebApplication.CreateBuilder(args); // an object which stores configurations (env-variables, etc.) to later build the webapp
 

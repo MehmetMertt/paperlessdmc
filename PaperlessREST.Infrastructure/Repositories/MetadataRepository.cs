@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PaperlessRest.Application.DTOs;
+using PaperlessREST.Application.DTOs;
 using PaperlessREST.Domain.Entities;
+using PaperlessREST.Infrastructure;
+using PaperlessREST.Infrastructure.Repositories;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 
@@ -38,20 +40,16 @@ namespace PaperlessREST.Infrastructure.Repositories
 
         public void Update(MetaData metaData)
         {
-
             //TODO: https://www.learnentityframeworkcore.com/concurrency
             try
             {
-
                 _context.MetaDatas.Update(metaData);
                 _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException ex)
             {
                 throw new Exception("Not found");
-
                 //  throw new EntityNotFoundException();
-
             }
         }
 

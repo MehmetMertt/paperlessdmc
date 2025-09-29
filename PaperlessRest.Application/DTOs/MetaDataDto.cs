@@ -1,4 +1,4 @@
-﻿namespace PaperlessRest.Application.DTOs
+﻿namespace PaperlessREST.Application.DTOs
 {
     public class MetaDataDto
     {

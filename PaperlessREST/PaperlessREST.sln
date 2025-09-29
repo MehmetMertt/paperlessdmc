@@ -11,9 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaperlessREST.Infrastructur
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperlessREST.Application", "..\PaperlessRest.Application\PaperlessREST.Application.csproj", "{43C20438-AB22-4E19-9AD4-5EDB5C6AE3A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperlessREST.DataAccess", "..\PaperlessREST.DataAccess\PaperlessREST.DataAccess.csproj", "{5A3B5D45-3E43-48FE-84CE-94936CA824DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperlessREST.DataAccess", "..\PaperlessREST.DataAccess\PaperlessREST.DataAccess.csproj", "{0CA71BFF-25E3-4A55-B250-D7F907F7D620}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperlessREST.Business", "..\PaperlessREST.Business\PaperlessREST.Business.csproj", "{2D5FF9F4-AF1C-46D3-9003-635A9F4DD973}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperlessREST.Business", "..\PaperlessREST.Business\PaperlessREST.Business.csproj", "{B5495235-B6F5-4F8E-AFCB-A8571894301C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,14 +37,14 @@ Global
 		{43C20438-AB22-4E19-9AD4-5EDB5C6AE3A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43C20438-AB22-4E19-9AD4-5EDB5C6AE3A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43C20438-AB22-4E19-9AD4-5EDB5C6AE3A7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5A3B5D45-3E43-48FE-84CE-94936CA824DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A3B5D45-3E43-48FE-84CE-94936CA824DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A3B5D45-3E43-48FE-84CE-94936CA824DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A3B5D45-3E43-48FE-84CE-94936CA824DE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D5FF9F4-AF1C-46D3-9003-635A9F4DD973}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D5FF9F4-AF1C-46D3-9003-635A9F4DD973}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D5FF9F4-AF1C-46D3-9003-635A9F4DD973}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D5FF9F4-AF1C-46D3-9003-635A9F4DD973}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CA71BFF-25E3-4A55-B250-D7F907F7D620}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CA71BFF-25E3-4A55-B250-D7F907F7D620}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CA71BFF-25E3-4A55-B250-D7F907F7D620}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CA71BFF-25E3-4A55-B250-D7F907F7D620}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5495235-B6F5-4F8E-AFCB-A8571894301C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5495235-B6F5-4F8E-AFCB-A8571894301C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5495235-B6F5-4F8E-AFCB-A8571894301C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5495235-B6F5-4F8E-AFCB-A8571894301C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

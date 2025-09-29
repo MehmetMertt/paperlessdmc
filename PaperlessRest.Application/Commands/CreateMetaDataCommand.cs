@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace PaperlessREST.Infrastructure.Service
+namespace PaperlessREST.Application.Commands
 {
     public record CreateMetaDataCommand( // specifies the format of the query matching to the table
         [StringLength(100, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 100 characters")]
