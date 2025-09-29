@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.9.34607.119
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11018.127 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaperlessREST.API", "PaperlessREST.API.csproj", "{351BB555-DBDD-4FE8-9881-861E22AF15B3}"
 EndProject
@@ -9,7 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaperlessREST.Domain", "..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaperlessREST.Infrastructure", "..\PaperlessREST.Infrastructure\PaperlessREST.Infrastructure.csproj", "{04972BB9-89DB-483B-A2F8-5C58F15FC2F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperlessRest.Application", "..\PaperlessRest.Application\PaperlessRest.Application.csproj", "{43C20438-AB22-4E19-9AD4-5EDB5C6AE3A7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperlessREST.Application", "..\PaperlessRest.Application\PaperlessREST.Application.csproj", "{43C20438-AB22-4E19-9AD4-5EDB5C6AE3A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperlessREST.DataAccess", "..\PaperlessREST.DataAccess\PaperlessREST.DataAccess.csproj", "{5A3B5D45-3E43-48FE-84CE-94936CA824DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperlessREST.Business", "..\PaperlessREST.Business\PaperlessREST.Business.csproj", "{2D5FF9F4-AF1C-46D3-9003-635A9F4DD973}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{43C20438-AB22-4E19-9AD4-5EDB5C6AE3A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43C20438-AB22-4E19-9AD4-5EDB5C6AE3A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43C20438-AB22-4E19-9AD4-5EDB5C6AE3A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A3B5D45-3E43-48FE-84CE-94936CA824DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A3B5D45-3E43-48FE-84CE-94936CA824DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A3B5D45-3E43-48FE-84CE-94936CA824DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A3B5D45-3E43-48FE-84CE-94936CA824DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D5FF9F4-AF1C-46D3-9003-635A9F4DD973}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D5FF9F4-AF1C-46D3-9003-635A9F4DD973}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D5FF9F4-AF1C-46D3-9003-635A9F4DD973}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D5FF9F4-AF1C-46D3-9003-635A9F4DD973}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
