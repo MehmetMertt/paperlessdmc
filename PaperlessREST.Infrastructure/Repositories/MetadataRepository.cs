@@ -22,8 +22,6 @@ namespace PaperlessREST.Infrastructure.Repositories
 
         public MetaData? GetByGuid(Guid guid) => _context.MetaDatas.SingleOrDefault(m => m.Id == guid);
 
-        public MetaData? GetByUser(Guid userId) => _context.MetaDatas.SingleOrDefault(m => m.OwnerId == userId);
-
         public void Add(MetaData metadata)
         {
             try

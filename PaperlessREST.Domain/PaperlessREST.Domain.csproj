@@ -7,10 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Exception\" />
-    <Folder Include="Events\" />
-    <Folder Include="Interfaces\" />
-    <Folder Include="Enums\" />
+    <Compile Remove="Enums\**" />
+    <Compile Remove="Events\**" />
+    <Compile Remove="Exception\**" />
+    <Compile Remove="Interfaces\**" />
+    <EmbeddedResource Remove="Enums\**" />
+    <EmbeddedResource Remove="Events\**" />
+    <EmbeddedResource Remove="Exception\**" />
+    <EmbeddedResource Remove="Interfaces\**" />
+    <None Remove="Enums\**" />
+    <None Remove="Events\**" />
+    <None Remove="Exception\**" />
+    <None Remove="Interfaces\**" />
   </ItemGroup>
 
 </Project>

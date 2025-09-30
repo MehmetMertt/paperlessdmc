@@ -8,7 +8,6 @@ namespace PaperlessREST.Infrastructure.Repositories
         void Delete(MetaData metaData);
         IQueryable<MetaData> GetAll();
         MetaData? GetByGuid(Guid guid);
-        MetaData? GetByUser(Guid userId);
         void Update(MetaData metaData);
     }
 }

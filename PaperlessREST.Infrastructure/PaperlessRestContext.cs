@@ -17,10 +17,9 @@ namespace PaperlessREST.Infrastructure
 
         public PaperlessRestContext(DbContextOptions options) : base(options)
         {
+        
         }
 
         public DbSet<MetaData> MetaDatas => Set<MetaData>();
-        public DbSet<User> Users => Set<User>();
-
     }
 }

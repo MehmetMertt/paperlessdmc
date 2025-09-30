@@ -2,25 +2,19 @@
 {
     public class MetaDataDto
     {
-        public MetaDataDto(Guid id, Guid ownerId, string name, string fileExtension, string? author)
+        public MetaDataDto(Guid id, string title, string fileType, int fileSize, string? summary)
         {
             Id = id;
-            OwnerId = ownerId;
-            Name = name;
-            FileExtension = fileExtension;
-            Author = author;
+            Title = title;
+            FileType = fileType;
+            FileSize = fileSize;
+            Summary = summary;
         }
 
-
         public Guid Id { get; set; }
-
-        public Guid OwnerId { get; set; }
-
-        public string Name { get; set; }
-
-        public string FileExtension { get; set; }
-
-        public string? Author { get; set; }
-
+        public string Title { get; set; }
+        public string FileType { get; set; }
+        public int FileSize { get; set; }
+        public string? Summary { get; set; }
     }
 }
