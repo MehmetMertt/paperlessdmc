@@ -16,14 +16,12 @@ namespace PaperlessREST.API.Controllers
     //[ProducesResponseType(StatusCodes.Status404NotFound)]
     public class MetaDataController : Controller
     {
-
         private readonly IMetaDataService _metaDataService;
 
         public MetaDataController(IMetaDataService metaDataService)
         {
             _metaDataService = metaDataService;
         }
-
 
         // GET: MetaDataController
         [HttpGet]
@@ -49,12 +47,11 @@ namespace PaperlessREST.API.Controllers
         {
             var metaData = _metaDataService.GetMetaDataByGuid(guid);
 
-            if (metaData == null) return NoContent();
+            if (metaData == null) 
+                return NoContent();
 
             return Ok(metaData);
-
         }
-
 
         [HttpPost()]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -64,7 +61,7 @@ namespace PaperlessREST.API.Controllers
            // ValidationResult result = validator.Validate(command);
             var createdMetaData = _metaDataService.CreateMetaData(command);
             return CreatedAtAction(nameof(GetMetaDatas), new { guid = createdMetaData.Id },
-                new MetaDataDto(createdMetaData.Id,command.OwnerId,command.Name,command.FileExtension,command.Author));
+                new MetaDataDto(createdMetaData.Id,command.Title, command.FileType, command.FileSize, command.Summary));
         }
     }
 }
