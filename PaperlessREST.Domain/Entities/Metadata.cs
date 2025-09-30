@@ -4,23 +4,17 @@ namespace PaperlessREST.Domain.Entities
 {
     public class MetaData : BaseAuditableEntity
     {
-        public MetaData(Guid ownerId, string name, string fileExtension, string? author)
+        public MetaData(string title, string fileType, int fileSize, string? summary)
         {
-            OwnerId = ownerId;
-            Name = name;
-            FileExtension = fileExtension;
-            Author = author;
+            Title = title;
+            FileType = fileType;
+            FileSize = fileSize;
+            Summary = summary;
         }
 
-
-        public Guid OwnerId { get; set; }
-
-        public string Name { get; set; }
-        
-        public string FileExtension { get; set; }
-
-        public string? Author { get; set; }
-
-
+        public string Title { get; set; }
+        public string FileType { get; set; }
+        public int FileSize { get; set; }
+        public string? Summary { get; set; }
     }
 }

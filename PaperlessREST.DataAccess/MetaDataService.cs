@@ -27,9 +27,9 @@ namespace PaperlessREST.DataAccess.Service
         {
             try
             {
-                var metaData = new MetaData(createCommand.OwnerId, createCommand.Name, createCommand.FileExtension, createCommand.Author);
+                var metaData = new MetaData(createCommand.Title, createCommand.FileType, createCommand.FileSize, createCommand.Summary);
                 _metadataRepository.Add(metaData);
-                return new MetaDataDto(metaData.Id, metaData.OwnerId, metaData.Name, metaData.FileExtension, metaData.Author);
+                return new MetaDataDto(metaData.Id, metaData.Title, metaData.FileType, metaData.FileSize, metaData.Summary);
             }
             catch (Exception ex)
             {
@@ -43,16 +43,14 @@ namespace PaperlessREST.DataAccess.Service
             if (metaData == null)
                 throw new Exception($"metaData with guid {guid} not found");
 
-            return new MetaDataDto(metaData.Id, metaData.OwnerId, metaData.Name, metaData.FileExtension, metaData.Author);
+            return new MetaDataDto(metaData.Id, metaData.Title, metaData.FileType, metaData.FileSize, metaData.Summary);
         }
 
         public IEnumerable<MetaDataDto> GetAllMetaData()
         {
             var metaDatas = _metadataRepository.GetAll();
 
-            return metaDatas
-                .Select(m => new MetaDataDto(m.Id, m.OwnerId, m.Name, m.FileExtension, m.Author))
-                .ToList();
+            return metaDatas.Select(m => new MetaDataDto(m.Id, m.Title, m.FileType, m.FileSize, m.Summary)).ToList();
         }
     }
 }
