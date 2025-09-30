@@ -57,3 +57,8 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+
+Use "docker build . -t nginx3:nginx3" in PresentationLayer/file-managment-gui to build docker image 
+
+node_modules directory removed due to size make sure it installed when running program
