@@ -3,13 +3,15 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy project files (mit korrekter Großschreibung)
-COPY PaperlessREST/PaperlessREST.API.csproj PaperlessREST/
-COPY PaperlessREST.Application/PaperlessREST.Application.csproj PaperlessREST.Application/
-COPY PaperlessREST.Domain/PaperlessREST.Domain.csproj PaperlessREST.Domain/
-COPY PaperlessREST.Infrastructure/PaperlessREST.Infrastructure.csproj PaperlessREST.Infrastructure/
-COPY PaperlessREST.DataAccess/PaperlessREST.DataAccess.csproj PaperlessREST.DataAccess/
-COPY PaperlessREST.Business/PaperlessREST.Business.csproj PaperlessREST.Business/
+#COPY PaperlessREST/PaperlessREST.API.csproj PaperlessREST/
+#COPY PaperlessREST.Application/PaperlessREST.Application.csproj PaperlessREST.Application/
+#COPY PaperlessREST.Domain/PaperlessREST.Domain.csproj PaperlessREST.Domain/
+#COPY PaperlessREST.Infrastructure/PaperlessREST.Infrastructure.csproj PaperlessREST.Infrastructure/
+#COPY PaperlessREST.DataAccess/PaperlessREST.DataAccess.csproj PaperlessREST.DataAccess/
+#COPY PaperlessREST.Business/PaperlessREST.Business.csproj PaperlessREST.Business/
 
+
+COPY . .
 # Restore dependencies
 RUN dotnet restore "PaperlessREST/PaperlessREST.API.csproj"
 
