@@ -1,0 +1,8 @@
+/* Highlight drag area when dragging files over */
+.border-primary {
+  transition: background-color 0.3s ease;
+}
+
+.border-primary:hover {
+  background-color: #e9f5ff;
+}

@@ -1,0 +1,27 @@
+<div class="container mt-3" *ngIf="document; else noSelection">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h4 class="card-title">{{ document!.title }}</h4>  <!-- ! not null assertion character, tell compiler value is not null-->
+      <p><strong>ID:</strong> {{ document!.id }}</p>
+      <p><strong>File Type:</strong> {{ document!.filetype }}</p>
+      <p><strong>Size:</strong> {{ document!.size }} KB</p>
+      <p><strong>Created On:</strong> {{ document!.createdOn }}</p>
+      <p><strong>Modified Last:</strong> {{ document!.modifiedLast }}</p>
+
+      <!-- Scrollable content box -->
+      <label class="form-label fw-bold">Summary:</label>
+      <textarea class="form-control"
+                readonly
+                style="width: 90%; max-height: 150px; overflow-y: auto; resize: none;">
+        {{ document!.content }}
+      </textarea>
+    </div>
+  </div>
+</div>
+
+<!-- Fallback when no doc is selected -->
+ <ng-template #noSelection>
+  <div class="text-muted mt-3 text-center">
+    Select a document to view details.
+  </div>
+</ng-template>

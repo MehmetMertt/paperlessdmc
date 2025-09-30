@@ -1,0 +1,19 @@
+<div class="d-flex justify-content-center mt-3">
+  <!-- Single scrollable container, width 90% -->
+  <div class="document-list border rounded p-3" style="width: 90%; max-height: 250px; overflow-y: auto;">
+    
+    <!-- Each document is displayed as a separate item -->
+    <div *ngFor="let doc of documents"
+         class="doc-item border rounded p-1 mb-3"
+        [class.selected]="selectedId === doc.id"
+         (click)="onSelect(doc)">
+      <h5>{{ doc.title }}</h5>
+     <!-- <p>{{ doc.content }}</p>-->
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="documents.length === 0" class="text-muted text-center">
+      No documents found.
+    </div>
+  </div>
+</div>
