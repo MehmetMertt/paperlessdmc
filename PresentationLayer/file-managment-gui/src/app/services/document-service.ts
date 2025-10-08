@@ -39,7 +39,18 @@ export class DocumentService {
   }
 
   /** Create new document (using your POST endpoint) */
-  createDocument(doc: Partial<DocumentItem>): Observable<DocumentItem> {
+  /*createDocument(doc: Partial<DocumentItem>): Observable<DocumentItem> {
     return this.http.post<DocumentItem>(this.apiUrl, doc);
+  }*/
+
+  /** Create new document (metadata + file upload) */
+  createDocument(formData: FormData): Observable<DocumentItem> {
+  return this.http.post<DocumentItem>(this.apiUrl, formData);
+}
+
+
+  deleteDocument(id: string): Observable<DocumentItem> {
+    return this.http.delete<DocumentItem>(`${this.apiUrl}/${id}`);
   }
+
 }
