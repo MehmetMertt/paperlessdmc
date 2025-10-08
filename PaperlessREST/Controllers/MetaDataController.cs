@@ -61,7 +61,7 @@ namespace PaperlessREST.API.Controllers
            // ValidationResult result = validator.Validate(command);
             var createdMetaData = _metaDataService.CreateMetaData(command);
             return CreatedAtAction(nameof(GetMetaDatas), new { guid = createdMetaData.Id },
-                new MetaDataDto(createdMetaData.Id,command.Title, command.FileType, command.FileSize, command.Summary));
+                new MetaDataDto(createdMetaData.Id,command.Title, command.FileType, command.FileSize, command.Summary, command.ModifiedLast,command.CreatedOn));
         }
     }
 }

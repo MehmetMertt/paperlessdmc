@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PaperlessREST.Domain.Common
 {
-    public abstract class BaseAuditableEntity : BaseEntity
+    public abstract class BaseAuditableEntity /*: BaseEntity*/
     {
         private DateTimeOffset _created;
         private DateTimeOffset _lastModified;

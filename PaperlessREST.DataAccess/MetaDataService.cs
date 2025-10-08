@@ -27,9 +27,9 @@ namespace PaperlessREST.DataAccess.Service
         {
             try
             {
-                var metaData = new MetaData(createCommand.Title, createCommand.FileType, createCommand.FileSize, createCommand.Summary);
+                var metaData = new MetaData(createCommand.Id,createCommand.Title, createCommand.FileType, createCommand.FileSize, createCommand.Summary,createCommand.CreatedOn,createCommand.ModifiedLast);
                 _metadataRepository.Add(metaData);
-                return new MetaDataDto(metaData.Id, metaData.Title, metaData.FileType, metaData.FileSize, metaData.Summary);
+                return new MetaDataDto(metaData.Id, metaData.Title, metaData.FileType, metaData.FileSize, metaData.Summary,metaData.CreatedOn,metaData.ModifiedLast);
             }
             catch (Exception ex)
             {
@@ -43,14 +43,14 @@ namespace PaperlessREST.DataAccess.Service
             if (metaData == null)
                 throw new Exception($"metaData with guid {guid} not found");
 
-            return new MetaDataDto(metaData.Id, metaData.Title, metaData.FileType, metaData.FileSize, metaData.Summary);
+            return new MetaDataDto(metaData.Id, metaData.Title, metaData.FileType, metaData.FileSize, metaData.Summary, metaData.CreatedOn, metaData.ModifiedLast);
         }
 
         public IEnumerable<MetaDataDto> GetAllMetaData()
         {
             var metaDatas = _metadataRepository.GetAll();
 
-            return metaDatas.Select(m => new MetaDataDto(m.Id, m.Title, m.FileType, m.FileSize, m.Summary)).ToList();
+            return metaDatas.Select(m => new MetaDataDto(m.Id, m.Title, m.FileType, m.FileSize, m.Summary, m.CreatedOn, m.ModifiedLast)).ToList();
         }
     }
 }

@@ -1,16 +1,18 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { DocumentService } from '../../services/document-service';
+import { DocumentItem } from '../../services/document-service';
 
-export interface DocumentItem {
-  id: string;
-  title: string;
-  content: string;
-  size: number;
-  filetype: string;
-  createdOn: string;
-  modifiedLast: string; 
-}
+/*export interface DocumentItem {
+  Id: string;        // C#: Id
+  Title: string;     // C#: Title
+  Summary: string;   // C#: Summary
+  FileSize: number;  // C#: FileSize
+  FileType: string;  // C#: FileType
+  CreatedOn: string; // C#: CreatedOn
+  ModifiedLast: string; // C#: ModifiedLast
+}*/
 
 @Component({
   selector: 'app-document-list',
@@ -20,6 +22,10 @@ export interface DocumentItem {
 })
 export class DocumentList {
   /** Documents to display */
+  
+  constructor(private documentService: DocumentService) {}
+
+  
   @Input() documents: DocumentItem[] = [];
 
   /** Emit selected document id when clicked */
@@ -31,7 +37,7 @@ export class DocumentList {
   selectedId: string | null = null;
 
   onSelect(doc: DocumentItem): void {
-    this.selectedId = doc.id;
+    this.selectedId = doc.Id;
     this.selectDocument.emit(doc);
   }
 }

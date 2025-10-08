@@ -1,26 +1,32 @@
 <div class="container mt-3" *ngIf="document; else noSelection">
   <div class="card shadow-sm">
     <div class="card-body">
-      <h4 class="card-title">{{ document!.title }}</h4>  <!-- ! not null assertion character, tell compiler value is not null-->
-      <p><strong>ID:</strong> {{ document!.id }}</p>
-      <p><strong>File Type:</strong> {{ document!.filetype }}</p>
-      <p><strong>Size:</strong> {{ document!.size }} KB</p>
-      <p><strong>Created On:</strong> {{ document!.createdOn }}</p>
-      <p><strong>Modified Last:</strong> {{ document!.modifiedLast }}</p>
+      <h4 class="card-title">{{ document!.Title }}</h4>
+      <p><strong>ID:</strong> {{ document!.Id }}</p>
+      <p><strong>File Type:</strong> {{ document!.FileType }}</p>
+      <p><strong>Size:</strong> {{ document!.FileSize }} KB</p>
+      <p><strong>Created On:</strong> {{ document!.CreatedOn }}</p>
+      <p><strong>Modified Last:</strong> {{ document!.ModifiedLast }}</p>
 
       <!-- Scrollable content box -->
       <label class="form-label fw-bold">Summary:</label>
       <textarea class="form-control"
                 readonly
                 style="width: 90%; max-height: 150px; overflow-y: auto; resize: none;">
-        {{ document!.content }}
+        {{ document!.Summary }}
       </textarea>
+
+      <!-- Action buttons -->
+      <div class="mt-3 d-flex gap-2">
+        <button class="btn btn-primary btn-sm" (click)="onUpdate()">Update</button>
+        <button class="btn btn-danger btn-sm" (click)="onDelete()">Delete</button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- Fallback when no doc is selected -->
- <ng-template #noSelection>
+<ng-template #noSelection>
   <div class="text-muted mt-3 text-center">
     Select a document to view details.
   </div>

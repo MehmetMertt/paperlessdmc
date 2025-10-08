@@ -5,9 +5,9 @@
     <!-- Each document is displayed as a separate item -->
     <div *ngFor="let doc of documents"
          class="doc-item border rounded p-1 mb-3"
-        [class.selected]="selectedId === doc.id"
+        [class.selected]="selectedId === doc.Id"
          (click)="onSelect(doc)">
-      <h5>{{ doc.title }}</h5>
+      <h5>{{ doc.Title }}</h5>
      <!-- <p>{{ doc.content }}</p>-->
     </div>
 

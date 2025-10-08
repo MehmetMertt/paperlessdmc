@@ -16,7 +16,10 @@
       <div class="col-sm-5">
 
         <app-document-detail
-          [document]="selectedDocument"></app-document-detail>
+          [document]="selectedDocument">
+          (delete)="onDeleteDocument($event)"
+          (update)="onUpdateDocument($event)">
+        </app-document-detail>
       </div>
      
       <div>
