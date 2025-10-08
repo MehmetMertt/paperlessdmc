@@ -13,6 +13,21 @@ builder.Services.AddDbContext<PaperlessRestContext>(options =>    // specifies c
     )
 );
 
+
+// Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200", "https://localhost:4200") // Angular dev server
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+
+
 // scope ... lifetime of the service per HTTP request
 builder.Services.AddScoped<IMetaDataService, MetaDataService>();       // MetaDataService ... consists of functions for metadata CRUD operations
 builder.Services.AddScoped<IMetadataRepository, MetadataRepository>(); // Repository pattern for data access
@@ -23,6 +38,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+
+
+
 
 // initializes the database here
 using (var scope = app.Services.CreateScope()) // scope ... small container for services
@@ -41,12 +60,17 @@ using (var scope = app.Services.CreateScope()) // scope ... small container for 
     }
 }
 
+
+
+
+
 /*if (app.Environment.IsDevelopment())
 {*/
 app.UseSwagger();
 app.UseSwaggerUI();
 /*}*/
-app.UseHttpsRedirection(); // redirects HTTP to HTTPS
+app.UseCors("AllowAngular"); //allow 
+//app.UseHttpsRedirection(); // redirects HTTP to HTTPS
 app.UseAuthorization();
 app.MapControllers();      // connects controller endpoints through routing
 app.Run();

@@ -37,7 +37,7 @@ export class DocumentList {
   selectedId: string | null = null;
 
   onSelect(doc: DocumentItem): void {
-    this.selectedId = doc.Id;
+    this.selectedId = doc.id;
     this.selectDocument.emit(doc);
   }
 }

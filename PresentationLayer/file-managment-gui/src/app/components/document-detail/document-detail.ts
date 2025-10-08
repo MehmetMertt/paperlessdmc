@@ -18,13 +18,13 @@ export class DocumentDetail {
 
   onDelete(): void {
     if (this.document) {
-      this.delete.emit(this.document.Id);
+      this.delete.emit(this.document.id);
     }
   }
 
   onUpdate(): void {
     if (this.document) {
-      this.update.emit(this.document.Id);
+      this.update.emit(this.document.id);
     }
   }
 }

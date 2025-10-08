@@ -1,19 +1,19 @@
 <div class="container mt-3" *ngIf="document; else noSelection">
   <div class="card shadow-sm">
     <div class="card-body">
-      <h4 class="card-title">{{ document!.Title }}</h4>
-      <p><strong>ID:</strong> {{ document!.Id }}</p>
-      <p><strong>File Type:</strong> {{ document!.FileType }}</p>
-      <p><strong>Size:</strong> {{ document!.FileSize }} KB</p>
-      <p><strong>Created On:</strong> {{ document!.CreatedOn }}</p>
-      <p><strong>Modified Last:</strong> {{ document!.ModifiedLast }}</p>
+      <h4 class="card-title">{{ document!.title }}</h4>
+      <p><strong>ID:</strong> {{ document!.id }}</p>
+      <p><strong>File Type:</strong> {{ document!.fileType }}</p>
+      <p><strong>Size:</strong> {{ document!.fileSize }} KB</p>
+      <p><strong>Created On:</strong> {{ document!.createdOn }}</p>
+      <p><strong>Modified Last:</strong> {{ document!.modifiedLast }}</p>
 
       <!-- Scrollable content box -->
       <label class="form-label fw-bold">Summary:</label>
       <textarea class="form-control"
                 readonly
                 style="width: 90%; max-height: 150px; overflow-y: auto; resize: none;">
-        {{ document!.Summary }}
+        {{ document!.summary }}
       </textarea>
 
       <!-- Action buttons -->

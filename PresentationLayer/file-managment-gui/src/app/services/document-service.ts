@@ -7,13 +7,13 @@ import { Observable } from 'rxjs';
 
 // Match your C# API property names
 export interface DocumentItem {
-  Id: string;
-  Title: string;
-  Summary: string;
-  FileSize: number;
-  FileType: string;
-  CreatedOn: string;
-  ModifiedLast: string;
+  id: string;
+  title: string;
+  summary: string;
+  fileSize: number;
+  fileType: string;
+  createdOn: string;
+  modifiedLast: string;
 }
 
 @Injectable({
@@ -22,7 +22,7 @@ export interface DocumentItem {
 
 
 export class DocumentService {
-  private apiUrl = 'http://localhost:7212/api/MetaData'; // Adjust port if needed
+  private apiUrl = 'https://localhost:7212/api/MetaData'; // Adjust port if needed
 
 
   

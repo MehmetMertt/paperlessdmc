@@ -20,7 +20,8 @@ export class App {
     // Generate 20 mock documents
     
     constructor(private documentService: DocumentService) {}
-         
+    documents: DocumentItem[] = [];
+
 
 
     mockDocuments: DocumentItem[] = this.generateMockDocuments(20);
@@ -30,8 +31,28 @@ export class App {
   filteredDocuments: DocumentItem[] = [...this.mockDocuments];
 
 
+  ngOnInit(){
+    this.loadDocuments();
 
+  }
   
+ /** Fetch documents from API */
+  loadDocuments() {
+    this.documentService.getDocuments().subscribe({
+      next: (docs) => {
+        console.log('Documents loaded from API:', docs);
+        this.documents = docs;
+        this.filteredDocuments = [...docs];
+      },
+      error: (err) => {
+        console.error('Failed to load documents, using mock data.', err);
+        // fallback to mock if API fails
+        this.documents = this.generateMockDocuments(20);
+        this.filteredDocuments = [...this.documents];
+      },
+    });
+  }
+
   generateMockDocuments(count: number): DocumentItem[] {
     
     
@@ -40,13 +61,13 @@ export class App {
     var docs: DocumentItem[] = [];
     for (let i = 1; i <= count; i++) {
       docs.push({
-        Id: `doc-${i}`,
-        Title: `Document ${i} — Sample Title`,
-        Summary: `${lorem} (document ${i} content — paragraph 1)\n\n${lorem} (document ${i} content — paragraph 2)`,
-        FileSize: 10000,
-        FileType: "some File",
-        CreatedOn: "25.09.2025",
-        ModifiedLast: "26.09.2025",
+        id: `doc-${i}`,
+        title: `Document ${i} — Sample Title`,
+        summary: `${lorem} (document ${i} content — paragraph 1)\n\n${lorem} (document ${i} content — paragraph 2)`,
+        fileSize: 10000,
+        fileType: "some File",
+        createdOn: "25.09.2025",
+        modifiedLast: "26.09.2025",
       });
     
 
