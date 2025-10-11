@@ -80,6 +80,14 @@ export class App {
     return docs;
   }
 
+
+
+  onDeleteDocument() {
+    // 🔁 Refresh list after delete
+    this.loadDocuments();
+  }
+
+
   selectedDocument: DocumentItem | null = null;
 
     onDocumentSelected(doc: DocumentItem) {
@@ -87,6 +95,9 @@ export class App {
     // Do whatever you need: open, load, etc.
     this.selectedDocument = doc;
   }
+
+
+  
 }
 
 

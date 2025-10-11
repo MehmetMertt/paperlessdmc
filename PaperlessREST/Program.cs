@@ -20,7 +20,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAngular",
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200", "https://localhost:4200") // Angular dev server
+            policy.WithOrigins("http://localhost:4200", "https://localhost:4200","https://localhost:80", "http://localhost:80", "http://localhost", "https://localhost") // Angular dev server
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
@@ -70,7 +70,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 /*}*/
 app.UseCors("AllowAngular"); //allow 
-//app.UseHttpsRedirection(); // redirects HTTP to HTTPS
+app.UseHttpsRedirection(); // redirects HTTP to HTTPS
 app.UseAuthorization();
 app.MapControllers();      // connects controller endpoints through routing
 app.Run();

@@ -1,12 +1,18 @@
-﻿using PaperlessREST.Application.DTOs;
-using PaperlessREST.Application.Commands;
+﻿using PaperlessREST.Application.Commands;
+using PaperlessREST.Application.DTOs;
+using PaperlessREST.Domain.Entities;
 
 namespace PaperlessREST.DataAccess.Service
 {
     public interface IMetaDataService
     {
-        MetaDataDto CreateMetaData(CreateMetaDataCommand createCommand);
-        IEnumerable<MetaDataDto> GetAllMetaData();
-        MetaDataDto? GetMetaDataByGuid(Guid guid);
+        MetaData CreateMetaData(CreateMetaDataCommand createCommand);
+        IEnumerable<MetaData> GetAllMetaData();
+        MetaData? GetMetaDataByGuid(Guid guid);
+
+        public void DeleteMetadata(Guid guid);
+
+        public void UpdateMetadata(MetaData updatedMetaData);
     }
+
 }

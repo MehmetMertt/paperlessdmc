@@ -5,6 +5,7 @@ using PaperlessREST.Infrastructure;
 using PaperlessREST.Infrastructure.Repositories;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PaperlessREST.Infrastructure.Repositories
 {
@@ -41,7 +42,14 @@ namespace PaperlessREST.Infrastructure.Repositories
             //TODO: https://www.learnentityframeworkcore.com/concurrency
             try
             {
-                _context.MetaDatas.Update(metaData);
+
+                var existingMetaData=_context.MetaDatas.Find(metaData.Id);
+                existingMetaData.Title = metaData.Title;
+                existingMetaData.Summary = metaData.Summary;
+                existingMetaData.FileType = metaData.FileType;
+                existingMetaData.FileSize = metaData.FileSize;
+                existingMetaData.ModifiedLast = DateTime.UtcNow;
+
                 _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException ex)

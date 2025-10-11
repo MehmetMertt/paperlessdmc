@@ -1,4 +1,5 @@
-﻿using PaperlessREST.Domain.Entities;
+﻿using PaperlessREST.Application.DTOs;
+using PaperlessREST.Domain.Entities;
 
 namespace PaperlessREST.Infrastructure.Repositories
 {

@@ -1,13 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Validations;
-using PaperlessREST.Application.DTOs;
 using PaperlessREST.Application.Commands;
+using PaperlessREST.Application.DTOs;
+using PaperlessREST.DataAccess.Service;
 using PaperlessREST.Domain.Entities;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
-using PaperlessREST.DataAccess.Service;
 
 namespace PaperlessREST.API.Controllers
 {
@@ -53,6 +55,42 @@ namespace PaperlessREST.API.Controllers
             return Ok(metaData);
         }
 
+        // DELETE: MetaDataController/<guuid> 
+
+        [HttpDelete("{guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+
+        public ActionResult<MetaData> DeleteMetaData (Guid guid)
+        {
+                      
+            if (guid == null)
+                return NoContent();
+
+
+
+            _metaDataService.DeleteMetadata(guid);
+            
+
+            return Ok(guid);
+
+        }
+
+        // PUT: api/documents/{id}
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public ActionResult UpdateMetaData(Guid id, [FromBody] MetaData updatedMetadata)
+        {
+            // Ensure IDs match
+            if (id != updatedMetadata.Id)
+                return BadRequest("Document ID mismatch.");
+
+            _metaDataService.UpdateMetadata(updatedMetadata);
+            // Return the updated document
+            return Ok(updatedMetadata);
+        }
+
         [HttpPost()]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -61,7 +99,7 @@ namespace PaperlessREST.API.Controllers
            // ValidationResult result = validator.Validate(command);
             var createdMetaData = _metaDataService.CreateMetaData(command);
             return CreatedAtAction(nameof(GetMetaDatas), new { guid = createdMetaData.Id },
-                new MetaDataDto(createdMetaData.Id,command.Title, command.FileType, command.FileSize, command.Summary, command.ModifiedLast,command.CreatedOn));
+                new MetaData(createdMetaData.Id,command.Title, command.FileType, command.FileSize, command.Summary, command.ModifiedLast,command.CreatedOn));
         }
     }
 }

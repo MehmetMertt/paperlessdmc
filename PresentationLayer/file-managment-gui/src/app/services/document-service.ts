@@ -49,6 +49,12 @@ export class DocumentService {
 }
 
 
+ /** Update an existing document on the server */
+  updateDocument(document: DocumentItem): Observable<DocumentItem> {
+    const url = `${this.apiUrl}/${document.id}`;
+    return this.http.put<DocumentItem>(url, document);
+  }
+
   deleteDocument(id: string): Observable<DocumentItem> {
     return this.http.delete<DocumentItem>(`${this.apiUrl}/${id}`);
   }
