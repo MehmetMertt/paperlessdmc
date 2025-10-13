@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using PaperlessREST.Infrastructure;
-using PaperlessREST.Infrastructure.Repositories;
 using PaperlessREST.DataAccess.Service;
+using PaperlessREST.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args); // an object which stores configurations (env-variables, etc.) to later build the webapp
 
@@ -12,7 +12,6 @@ builder.Services.AddDbContext<PaperlessRestContext>(options =>    // specifies c
         b => b.MigrationsAssembly("PaperlessREST.Infrastructure") // MigrationsAssembly ... specifies where ef-migrations are saved
     )
 );
-
 
 // Add CORS policy
 builder.Services.AddCors(options =>
@@ -26,7 +25,8 @@ builder.Services.AddCors(options =>
         });
 });
 
-
+builder.Services.AddSingleton<RabbitMqService>();
+builder.Services.AddHostedService<OcrWorker>();   // registers ocr worker in the background and starts automatically with the start of the api
 
 // scope ... lifetime of the service per HTTP request
 builder.Services.AddScoped<IMetaDataService, MetaDataService>();       // MetaDataService ... consists of functions for metadata CRUD operations
@@ -38,10 +38,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
-
-
-
 
 // initializes the database here
 using (var scope = app.Services.CreateScope()) // scope ... small container for services
@@ -59,10 +55,6 @@ using (var scope = app.Services.CreateScope()) // scope ... small container for 
         logger.LogError(ex, "An error occurred during database initialization.");
     }
 }
-
-
-
-
 
 /*if (app.Environment.IsDevelopment())
 {*/
