@@ -22,7 +22,7 @@ export interface DocumentItem {
 
 
 export class DocumentService {
-  private apiUrl = 'https://localhost:7212/api/MetaData'; // Adjust port if needed
+  private apiUrl = 'api/MetaData'; // Adjust port if needed
 
 
   
