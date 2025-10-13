@@ -25,9 +25,6 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddSingleton<RabbitMqService>();
-builder.Services.AddHostedService<OcrWorker>();   // registers ocr worker in the background and starts automatically with the start of the api
-
 // scope ... lifetime of the service per HTTP request
 builder.Services.AddScoped<IMetaDataService, MetaDataService>();       // MetaDataService ... consists of functions for metadata CRUD operations
 builder.Services.AddScoped<IMetadataRepository, MetadataRepository>(); // Repository pattern for data access
@@ -36,6 +33,9 @@ builder.Services.AddControllers(); // registers MVC-controller, without this aps
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSingleton<RabbitMqService>();
+builder.Services.AddHostedService<OcrWorker>();   // registers ocr worker in the background and starts automatically with the start of the api
 
 var app = builder.Build();
 

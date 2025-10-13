@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using PaperlessREST.Application;
 using RabbitMQ.Client;
 using System.Text;
@@ -8,9 +9,12 @@ public class RabbitMqService : IMessageQueue, IDisposable
     private readonly IConnection _connection;
     private readonly IModel _channel; // lightweight communication option for sending and receiving messages
     private readonly string _queueName = "document_queue"; // queues have names
+    private readonly ILogger<RabbitMqService> _logger;
 
-    public RabbitMqService(IConfiguration configuration)
+    public RabbitMqService(IConfiguration configuration, ILogger<RabbitMqService> logger)
     {
+        _logger = logger;
+
         var host = configuration["RabbitMQ:Host"];
         var username = configuration["RabbitMQ:Username"];
         var password = configuration["RabbitMQ:Password"];

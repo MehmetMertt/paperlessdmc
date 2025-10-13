@@ -158,8 +158,8 @@ namespace PaperlessREST.API.Controllers
         }
 
         [HttpPost("upload")]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadDocument([FromForm] IFormFile file)
+        // [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadDocument(/*[FromForm]*/ IFormFile file)
         {
             try
             {
