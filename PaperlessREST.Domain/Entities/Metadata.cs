@@ -4,7 +4,7 @@ namespace PaperlessREST.Domain.Entities
 {
     public class MetaData /*: BaseAuditableEntity*/
     {
-        public MetaData(Guid id,string title, string fileType, int fileSize, string? summary, DateTime createdOn,DateTime modifiedLast)
+        public MetaData(Guid id,string title, string fileType, double fileSize, string? summary, DateTime createdOn,DateTime modifiedLast)
         {
             this.Title = title;
             this.FileType = fileType;
@@ -19,7 +19,7 @@ namespace PaperlessREST.Domain.Entities
         public Guid Id { get; set; }
         public string Title { get; set; }
         public string FileType { get; set; }
-        public int FileSize { get; set; }
+        public double FileSize { get; set; }
         public string? Summary { get; set; }
         public DateTime CreatedOn { get; set; }
 

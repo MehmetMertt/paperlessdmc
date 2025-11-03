@@ -32,7 +32,14 @@ namespace PaperlessREST.Infrastructure.Repositories
             }
             catch (DbUpdateException ex)
             {
-                throw new ValidationException($"Failed to add Metadata to database: {ex.Message}");
+                throw new ValidationException($"Failed to add Metadata to database: {ex.Message}| Inner: {ex.InnerException?.Message}");
+            }
+            catch (Exception ex)
+            {
+                // Fallback catch for unexpected exceptions
+                throw new ValidationException(
+                    $"Unexpected error while adding Metadata: {ex.Message} | Inner: {ex.InnerException?.Message}"
+                );
             }
 
         }

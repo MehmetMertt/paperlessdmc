@@ -11,10 +11,15 @@ services:
       - RabbitMQ__Host=rabbitmq
       - RabbitMQ__Username=user
       - RabbitMQ__Password=password
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=${MINIO_DEFAULT_USER}
+      - MINIO_SECRET_KEY=${MINIO_DEFAULT_PASSWORD}
     depends_on:
       postgres:
         condition: service_healthy
       rabbitmq:
+        condition: service_healthy
+      minio:
         condition: service_healthy
 
   postgres:
@@ -61,6 +66,39 @@ services:
       timeout: 5s
       retries: 5
 
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    environment: 
+      - MINIO_ROOT_USER=${MINIO_DEFAULT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_DEFAULT_PASSWORD}
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  minio-setup:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      mc alias set local http://minio:9000 ${MINIO_DEFAULT_USER} ${MINIO_DEFAULT_PASSWORD};
+      mc mb -p local/paperless-data || true;
+      mc anonymous set public local/paperless-data;
+      echo '✅ MinIO bucket created: paperless-data';
+      "
+
   nginx:
     image: nginx3:nginx3
     container_name: file_managment_gui
@@ -74,3 +112,4 @@ services:
 
 volumes:
   db_data:
+  minio_data:

@@ -27,13 +27,25 @@ namespace PaperlessREST.DataAccess.Service
         {
             try
             {
-                var metaData = new MetaData(createCommand.Id,createCommand.Title, createCommand.FileType, createCommand.FileSize, createCommand.Summary,createCommand.CreatedOn,createCommand.ModifiedLast);
+                var metaData = new MetaData(
+                    createCommand.Id,
+                    createCommand.Title, 
+                    createCommand.FileType, 
+                    createCommand.FileSize, 
+                    createCommand.Summary, 
+                    DateTime.SpecifyKind(createCommand.CreatedOn, DateTimeKind.Utc),
+                    DateTime.SpecifyKind(createCommand.ModifiedLast, DateTimeKind.Utc));
+               
                 _metadataRepository.Add(metaData);
-                return new MetaData(metaData.Id, metaData.Title, metaData.FileType, metaData.FileSize, metaData.Summary,metaData.CreatedOn,metaData.ModifiedLast);
+                
+                return metaData;
             }
             catch (Exception ex)
             {
-                throw new ValidationException($"Failed to create metaData: {ex.Message}");
+                //throw new ValidationException($"Failed to create metaData: {ex.Message}");
+                throw new ValidationException(
+                        $"Failed to create metaData: {ex.Message} | Inner: {ex.InnerException?.Message}"
+                    );
             }
         }
 
@@ -75,5 +87,8 @@ namespace PaperlessREST.DataAccess.Service
             _metadataRepository.Update(updatedMetaData);
 
         }
+
+
+
     }
 }

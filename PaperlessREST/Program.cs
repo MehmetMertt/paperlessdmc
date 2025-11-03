@@ -1,8 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using PaperlessREST.Infrastructure;
+using Minio;
 using PaperlessREST.DataAccess.Service;
+using PaperlessREST.Infrastructure;
 using PaperlessREST.Infrastructure.Repositories;
+using Minio.DataModel.Args;
+using System.IO;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args); // an object which stores configurations (env-variables, etc.) to later build the webapp
 
@@ -36,8 +40,20 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<RabbitMqService>();
 builder.Services.AddHostedService<OcrWorker>();   // registers ocr worker in the background and starts automatically with the start of the api
+builder.Services.AddSingleton<IMinioClient>(sp =>  //Minio Client for Document collection
+{
+    var config = builder.Configuration;
+    return new MinioClient()
+        .WithEndpoint("minio:9000") // or use config["Minio:Endpoint"]
+        .WithCredentials("minioadmin", "minioadmin") // replace with secrets/config
+        .WithSSL(false)
+        .Build();
+});
+
 
 var app = builder.Build();
+
+
 
 // initializes the database here
 using (var scope = app.Services.CreateScope()) // scope ... small container for services
@@ -65,4 +81,5 @@ app.UseCors("AllowAngular"); //allow
 app.UseHttpsRedirection(); // redirects HTTP to HTTPS
 app.UseAuthorization();
 app.MapControllers();      // connects controller endpoints through routing
+app.MapGet("/", () => "Welcome to MinIO API");
 app.Run();

@@ -45,7 +45,7 @@ export class DocumentService {
 
   /** Create new document (metadata + file upload) */
   createDocument(formData: FormData): Observable<DocumentItem> {
-  return this.http.post<DocumentItem>(this.apiUrl, formData);
+  return this.http.post<DocumentItem>(`${this.apiUrl}/upload`, formData);
 }
 
 
