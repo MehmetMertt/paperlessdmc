@@ -15,6 +15,7 @@ using Minio;
 using Minio.DataModel.Args;
 using System.IO;
 using System.Text;
+using Tesseract;
 
 namespace PaperlessREST.API.Controllers
 {
