@@ -3,21 +3,19 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Validations;
-using Minio;
-using Minio.DataModel.Args;
+using PaperlessREST.Infrastructure;
 using PaperlessREST.Application.Commands;
 using PaperlessREST.Application.DTOs;
-using PaperlessREST.DataAccess;
 using PaperlessREST.DataAccess.Service;
 using PaperlessREST.Domain.Entities;
-using PaperlessREST.Infrastructure;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
+using Minio;
+using Minio.DataModel.Args;
+using System.IO;
 using System.Text;
 using Tesseract;
-using ImageMagick;
 
 namespace PaperlessREST.API.Controllers
 {
@@ -218,10 +216,10 @@ namespace PaperlessREST.API.Controllers
                     metaData.Summary,
                     metaData.CreatedOn,
                     metaData.ModifiedLast);
-
+                
                 // Filename in minio
                 var objectName = $"{metaData.Id}_{file.FileName}";
-
+                
                 //Ensure bucket exists
                 bool found = await _minioClient.BucketExistsAsync(
                     new Minio.DataModel.Args.BucketExistsArgs().WithBucket(_bucketName)
@@ -244,23 +242,17 @@ namespace PaperlessREST.API.Controllers
                             .WithObjectSize(file.Length)
                             .WithContentType(file.ContentType)
                     );
-                }
-
+                }                
+                
                 // Save metadata in DB
                 var created = _metaDataService.CreateMetaData(command);
 
 
                 // sends message to rabbitmq:
-                var ocrMessage = new
-                {
-                    DocumentId = metaData.Id.ToString(),
-                    FileType = fileType,
-                    FileName = objectName
-                };
-                var messageJson = System.Text.Json.JsonSerializer.Serialize(ocrMessage);
-                _rabbit.SendMessage(messageJson);
+                var message = $"New document uploaded: {file.FileName}";
+                _rabbit.SendMessage(message);
 
-                _logger.LogInformation("Upload successful, OCR job queued for {FileName}", file.FileName);
+                _logger.LogInformation("Document uploaded and message sent to RabbitMQ: {file}", file.FileName);
 
                 return Ok(new { message = "Upload successful, OCR job queued." });
             }
