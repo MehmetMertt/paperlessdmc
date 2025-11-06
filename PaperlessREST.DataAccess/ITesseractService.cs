@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 
 namespace PaperlessREST.DataAccess
 {
-    public interface ITesseractService
+    internal interface ITesseractService
     {
-        string ExtractTextFromImage(Stream imageStream, string language = "eng");
-
     }
 }

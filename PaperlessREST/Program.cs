@@ -1,11 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Minio;
-using Minio.DataModel.Args;
-using PaperlessREST.DataAccess;
 using PaperlessREST.DataAccess.Service;
 using PaperlessREST.Infrastructure;
 using PaperlessREST.Infrastructure.Repositories;
+using Minio.DataModel.Args;
 using System.IO;
 using System.Text;
 
@@ -50,9 +49,6 @@ builder.Services.AddSingleton<IMinioClient>(sp =>  //Minio Client for Document c
         .WithSSL(false)
         .Build();
 });
-
-
-builder.Services.AddScoped<ITesseractService, TesseractService>();
 
 
 var app = builder.Build();
