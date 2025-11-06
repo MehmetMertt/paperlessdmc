@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperlessREST.Business", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperlessREST.Test", "..\PaperlessREST.Test\PaperlessREST.Test.csproj", "{5A903459-DA2E-4BF6-8A03-9A1CE97B1DEF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperlessREST.OcrWorker", "..\PaperlessREST.OcrWorker\PaperlessREST.OcrWorker.csproj", "{7812106C-2D0F-413D-B31F-0B5A6CFBBCDD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{5A903459-DA2E-4BF6-8A03-9A1CE97B1DEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A903459-DA2E-4BF6-8A03-9A1CE97B1DEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A903459-DA2E-4BF6-8A03-9A1CE97B1DEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7812106C-2D0F-413D-B31F-0B5A6CFBBCDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7812106C-2D0F-413D-B31F-0B5A6CFBBCDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7812106C-2D0F-413D-B31F-0B5A6CFBBCDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7812106C-2D0F-413D-B31F-0B5A6CFBBCDD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
