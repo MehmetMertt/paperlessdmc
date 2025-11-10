@@ -1,6 +1,0 @@
-Use "docker build . -t nginx3:nginx3" in PresentationLayer/file-managment-gui to build docker image 
-
-node_modules directory removed due to size make sure it installed when running program
-
-
-Also added at bottom of readme.md

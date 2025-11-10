@@ -3,18 +3,19 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Validations;
-using PaperlessREST.Infrastructure;
+using Minio;
+using Minio.DataModel.Args;
 using PaperlessREST.Application.Commands;
 using PaperlessREST.Application.DTOs;
 using PaperlessREST.DataAccess.Service;
 using PaperlessREST.Domain.Entities;
+using PaperlessREST.Infrastructure;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
-using Minio;
-using Minio.DataModel.Args;
-using System.IO;
 using System.Text;
+using System.Text.Json;
 
 namespace PaperlessREST.API.Controllers
 {
@@ -246,12 +247,11 @@ namespace PaperlessREST.API.Controllers
                 // Save metadata in DB
                 var created = _metaDataService.CreateMetaData(command);
 
-
                 // sends message to rabbitmq:
-                var message = $"New document uploaded: {file.FileName}";
-                _rabbit.SendMessage(message);
-
-                _logger.LogInformation("Document uploaded and message sent to RabbitMQ: {file}", file.FileName);
+                var ocrJob = new OCRJobDTO($"New document uploaded: {file.FileName}", metaData.Id.ToString(), metaData.FileType, objectName);
+                var jsonMessage = JsonSerializer.Serialize(ocrJob);
+                _rabbit.SendMessage(jsonMessage);
+                _logger.LogInformation("Document uploaded and OCR job sent to RabbitMQ: {file}", file.FileName);
 
                 return Ok(new { message = "Upload successful, OCR job queued." });
             }

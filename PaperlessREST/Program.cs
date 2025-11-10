@@ -4,6 +4,7 @@ using Minio;
 using PaperlessREST.DataAccess.Service;
 using PaperlessREST.Infrastructure;
 using PaperlessREST.Infrastructure.Repositories;
+//using PaperlessREST.OcrWorker;
 using Minio.DataModel.Args;
 using System.IO;
 using System.Text;
@@ -39,7 +40,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<RabbitMqService>();
-builder.Services.AddHostedService<OcrWorker>();   // registers ocr worker in the background and starts automatically with the start of the api
+//builder.Services.AddHostedService<OcrWorker>();   // registers ocr worker in the background and starts automatically with the start of the api
 builder.Services.AddSingleton<IMinioClient>(sp =>  //Minio Client for Document collection
 {
     var config = builder.Configuration;
