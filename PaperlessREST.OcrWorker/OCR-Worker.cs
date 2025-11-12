@@ -28,7 +28,7 @@ namespace PaperlessREST.OcrWorker
         {
             _logger = logger;
             _minioClient = new MinioClient()
-                .WithEndpoint("localhost:9000") // .WithEndpoint("minio:9000")
+                .WithEndpoint("minio:9000")
                 .WithCredentials("minioadmin", "minioadmin")
                 .Build();
 
@@ -39,7 +39,7 @@ namespace PaperlessREST.OcrWorker
         {
             var factory = new ConnectionFactory()
             {
-                HostName = "localhost", // "rabbitmq" <- docker-servicename
+                HostName = "rabbitmq", // <- docker-servicename
                 UserName = "user",
                 Password = "password"
             };

@@ -103,26 +103,20 @@ services:
     build:
       context: .
       dockerfile: PaperlessREST.OcrWorker/Dockerfile
+    restart: always
     environment:
-      - RabbitMQ__Host=${RABBITMQ_DEFAULT_HOST}
-      - RabbitMQ__Username=${RABBITMQ_DEFAULT_USER}
-      - RabbitMQ__Password=${RABBITMQ_DEFAULT_PASS}
+      - ASPNETCORE_ENVIRONMENT=Production
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USERNAME=user
+      - RABBITMQ_PASSWORD=password
       - MINIO_ENDPOINT=minio:9000
       - MINIO_ACCESS_KEY=${MINIO_DEFAULT_USER}
       - MINIO_SECRET_KEY=${MINIO_DEFAULT_PASSWORD}
-      - TESSDATA_PATH=/app/tessdata
     depends_on:
       rabbitmq:
         condition: service_healthy
       minio:
         condition: service_healthy
-    volumes:
-      - ./tessdata:/app/tessdata
-
-  tesseract:
-    image: tesseractshadow/tesseract4re
-    container_name: tesseract
-    command: tail -f /dev/null
 
   nginx:
     image: nginx3:nginx3

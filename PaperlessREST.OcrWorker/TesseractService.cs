@@ -43,7 +43,7 @@ namespace PaperlessREST.OcrWorker
                 "/usr/share/tesseract-ocr/4.00/tessdata",                  // common Linux install
                 "/usr/share/tessdata",                                     // alternative Linux path
                 "/app/tessdata",                                           // typical Docker mount
-                @"C:\Program Files\Tesseract-OCR\tessdata"
+                //@"C:\Program Files\Tesseract-OCR\tessdata"
             };
 
             foreach (var path in possiblePaths)
