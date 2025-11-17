@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PaperlessREST.OcrWorker
+namespace PaperlessREST.OcrWorker.Services
 {
     public interface ITesseractService
     {

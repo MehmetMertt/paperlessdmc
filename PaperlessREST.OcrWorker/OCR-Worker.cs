@@ -1,30 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ImageMagick;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using Minio;
 using Minio.DataModel.Args;
-using ImageMagick;
-using System.Text.Json;
 using PaperlessREST.Application.DTOs;
+using PaperlessREST.DataAccess.Service;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Metadata;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 
-namespace PaperlessREST.OcrWorker
+namespace PaperlessREST.OcrWorker.Services
 {
-    public class OcrWorker : BackgroundService
+    public class OCRWorker : BackgroundService
     {
-        private readonly ILogger<OcrWorker> _logger;
+        private readonly ILogger<OCRWorker> _logger;
         private IConnection _connection;
         private IModel _channel;
         private readonly string _queueName = "document_queue";
         private readonly IMinioClient _minioClient;
         private readonly TesseractService _tesseract;
+        private readonly GenAiService _genai;
+        private readonly IMetaDataService _metaDataService;
 
-        public OcrWorker(ILogger<OcrWorker> logger)
+        public OCRWorker(ILogger<OCRWorker> logger, GenAiService genai, IMetaDataService metaDataService)
         {
             _logger = logger;
             _minioClient = new MinioClient()
@@ -33,6 +37,8 @@ namespace PaperlessREST.OcrWorker
                 .Build();
 
             _tesseract = new TesseractService();
+            _genai = genai;
+            _metaDataService = metaDataService;
         }
 
         private void ConnectToRabbitMq()
@@ -123,6 +129,39 @@ namespace PaperlessREST.OcrWorker
                     .WithFileName(txtPath)
                     .WithContentType("text/plain")
             );
+
+            // send ocr text to genai
+            string summary = "";
+            try
+            {
+                summary = await _genai.SummarizeAsync(sb.ToString());
+                _logger.LogInformation("Summary generated: {Summary}", summary.Substring(0, Math.Min(200, summary.Length)));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Summary generation failed");
+            }
+
+            // save summary in database
+            try
+            {
+                var meta = _metaDataService.GetMetaDataByGuid(Guid.Parse(job.DocumentId));
+
+                if (meta != null)
+                {
+                    meta.Summary = summary;
+                    _metaDataService.UpdateMetadata(meta);
+                    _logger.LogInformation("Summary saved to database for {Id}", job.DocumentId);
+                }
+                else
+                {
+                    _logger.LogWarning("Could not find metadata for {Id}", job.DocumentId);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to save summary to database for {Id}", job.DocumentId);
+            }
         }
 
         public override void Dispose()

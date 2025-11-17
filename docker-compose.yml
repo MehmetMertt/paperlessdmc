@@ -62,7 +62,7 @@ services:
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
     healthcheck:
       test: ["CMD", "rabbitmqctl", "status"]
-      interval: 10s
+      interval: 20s
       timeout: 5s
       retries: 5
 
@@ -112,6 +112,8 @@ services:
       - MINIO_ENDPOINT=minio:9000
       - MINIO_ACCESS_KEY=${MINIO_DEFAULT_USER}
       - MINIO_SECRET_KEY=${MINIO_DEFAULT_PASSWORD}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - DB_CONNECTION=Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
     depends_on:
       rabbitmq:
         condition: service_healthy

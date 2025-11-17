@@ -207,16 +207,6 @@ namespace PaperlessREST.API.Controllers
 
                 metaData.Summary = ("No Summary");
 
-                var command = new CreateMetaDataCommand(
-
-                    metaData.Id,
-                    metaData.Title,
-                    metaData.FileType,
-                    metaData.FileSize,
-                    metaData.Summary,
-                    metaData.CreatedOn,
-                    metaData.ModifiedLast);
-                
                 // Filename in minio
                 var objectName = $"{metaData.Id}_{file.FileName}";
                 
@@ -231,7 +221,6 @@ namespace PaperlessREST.API.Controllers
                     );
 
                 // Upload file to minio
-
                 using (var stream = file.OpenReadStream())
                 {
                     await _minioClient.PutObjectAsync(
@@ -242,16 +231,20 @@ namespace PaperlessREST.API.Controllers
                             .WithObjectSize(file.Length)
                             .WithContentType(file.ContentType)
                     );
-                }                
-                
-                // Save metadata in DB
-                var created = _metaDataService.CreateMetaData(command);
+                }
 
                 // sends message to rabbitmq:
                 var ocrJob = new OCRJobDTO($"New document uploaded: {file.FileName}", metaData.Id.ToString(), metaData.FileType, objectName);
                 var jsonMessage = JsonSerializer.Serialize(ocrJob);
                 _rabbit.SendMessage(jsonMessage);
                 _logger.LogInformation("Document uploaded and OCR job sent to RabbitMQ: {file}", file.FileName);
+
+                metaData.Summary = ("No Summary");
+
+                var command = new CreateMetaDataCommand(metaData.Id, metaData.Title, metaData.FileType, metaData.FileSize, metaData.Summary, metaData.CreatedOn, metaData.ModifiedLast);
+
+                // Save metadata in DB
+                var created = _metaDataService.CreateMetaData(command);
 
                 return Ok(new { message = "Upload successful, OCR job queued." });
             }

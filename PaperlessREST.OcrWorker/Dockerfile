@@ -4,11 +4,17 @@ WORKDIR /src
 # copy only OcrWorker project and its dependencies
 COPY PaperlessREST.OcrWorker/PaperlessREST.OcrWorker.csproj PaperlessREST.OcrWorker/
 COPY PaperlessREST.Application/PaperlessREST.Application.csproj PaperlessREST.Application/
+COPY PaperlessREST.DataAccess/PaperlessREST.DataAccess.csproj PaperlessREST.DataAccess/
+COPY PaperlessREST.Infrastructure/PaperlessREST.Infrastructure.csproj PaperlessREST.Infrastructure/
+COPY PaperlessREST.Domain/PaperlessREST.Domain.csproj PaperlessREST.Domain/
 RUN dotnet restore "PaperlessREST.OcrWorker/PaperlessREST.OcrWorker.csproj"
 
 # copy the rest of the code
 COPY PaperlessREST.OcrWorker/ PaperlessREST.OcrWorker/
 COPY PaperlessREST.Application/ PaperlessREST.Application/
+COPY PaperlessREST.DataAccess/ PaperlessREST.DataAccess/
+COPY PaperlessREST.Infrastructure/ PaperlessREST.Infrastructure/
+COPY PaperlessREST.Domain/ PaperlessREST.Domain/
 
 WORKDIR /src/PaperlessREST.OcrWorker
 RUN dotnet publish "PaperlessREST.OcrWorker.csproj" -c Release -o /app/publish
@@ -25,7 +31,8 @@ RUN apt-get update && \
         tesseract-ocr-eng \
         libleptonica-dev \
         libtesseract-dev \
-        libmagickwand-dev && \
+        libmagickwand-dev \
+        ca-certificates curl && \
     rm -rf /var/lib/apt/lists/*
 
 # create symlinks where .NET is searching

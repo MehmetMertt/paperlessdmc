@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tesseract;
 
-namespace PaperlessREST.OcrWorker
+namespace PaperlessREST.OcrWorker.Services
 {
     public class TesseractService
     {
