@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DocumentService } from '../../services/document-service';
 import { DocumentItem } from '../../services/document-service';
+
 @Component({
   imports: [CommonModule],
   selector: 'app-upload-document',
@@ -9,13 +10,15 @@ import { DocumentItem } from '../../services/document-service';
   styleUrls: ['./upload.css'],
   standalone: true
 })
-export class Upload{
-  // Store selected files
-  files: File[] = [];
-  constructor(private documentService: DocumentService) {}
 
-  isUploading: boolean = false; //check if upload is complete
-  completed: number =0;
+export class Upload{
+  files: File[] = [];
+  isUploading:boolean = false;
+  completed:number = 0;
+
+  @Output() uploadFinished = new EventEmitter<void>();
+
+  constructor(private documentService: DocumentService) {}
 
   /**
    * Handle dragover event to allow dropping.
@@ -55,103 +58,51 @@ export class Upload{
    * Here you would usually send files to a backend via HttpClient.
    */
   uploadFiles(): void {
-    if (this.files.length === 0) {
+    if (!this.files || this.files.length === 0) {
       alert('No files selected!');
       return;
     }
 
-    console.log('Uploading files:', this.files);
-    
-    
-    
-    
-  {/* Without sending file in request
-  for (const file of this.files) {
-    const metadata: Partial<DocumentItem> = {
-      id: '',
-      title: file.name,
-      summary: '',
-      fileSize: file.size,
-      fileType: file.type,
-      // createdOn cannot be extracted from the File object reliably
-      createdOn: new Date().toISOString(),
-      modifiedLast: new Date(file.lastModified).toISOString()
-    };
+    this.isUploading = true;
+    this.completed = 0;
 
-    //this.documentService.createDocument(metadata).subscribe({
-    // next: (res) => console.log('Uploaded successfully:', res) ,
-    //  error: (err) => console.error('Error uploading metadata:', err)
-    //});
+    const totalFiles = this.files.length;
 
-    this.documentService.createDocument(metadata).subscribe({
-      next: (res) => {
-        console.log('Uploaded:', res);
-        this.completed++;
-        if (this.completed === this.files.length) {
-          this.isUploading = false;
-          alert(`${this.files.length} file(s) metadata sent successfully!`);
-          // Clear after upload
-          this.files = [];
+    for (const file of this.files) {
+      const formData = new FormData();
+      formData.append('file', file, file.name);
+      formData.append('id', '');
+      formData.append('title', file.name);
+      formData.append('summary', '');
+      formData.append('fileSize', file.size.toString());
+      formData.append('fileType', file.type);
+      formData.append('createdOn', new Date().toISOString());
+      formData.append('modifiedLast', new Date(file.lastModified).toISOString());
 
-
+      this.documentService.createDocument(formData).subscribe({
+        next: () => {
+          this.completed++;
+          if (this.completed === totalFiles) {
+            this.finishUpload();
+          }
+        },
+        error: () => {
+          this.completed++;
+          if (this.completed === totalFiles) {
+            this.finishUpload();
+          }
         }
-      },
-      error: (err) => {
-        console.error('Upload error:', err);
-        this.completed++;
-        if (this.completed === this.files.length) {
-          this.isUploading = false;
-        }
-      }
-    });
-
-
-  }*/}
-
-
-  for (const file of this.files) {
-    const formData = new FormData();
-
-    // Append file itself
-    formData.append('file', file, file.name);
-
-    // Append metadata fields
-    formData.append('id', ''); // empty id as requested
-    formData.append('title', file.name);
-    formData.append('summary', '');
-    formData.append('fileSize', file.size.toString());
-    formData.append('fileType', file.type);
-    formData.append('createdOn', new Date().toISOString());
-    formData.append('modifiedLast', new Date(file.lastModified).toISOString());
-
-    this.documentService.createDocument(formData).subscribe({
-      next: (res) => {
-        console.log('File + metadata uploaded:', res);
-        this.completed++;
-        if (this.completed === this.files.length) {
-          this.isUploading = false;
-          alert(`${this.files.length} file(s) uploaded successfully!`);
-          this.files = [];
-        }
-      },
-      error: (err) => {
-        console.error('Upload error:', err);
-        this.completed++;
-        if (this.completed === this.files.length) {
-          this.isUploading = false;
-        }
-      }
-    });
+      });
+    }
   }
 
-  this.isUploading = false;
-  // Clear after upload
+  private finishUpload() {
+    this.isUploading = false;
     this.files = [];
+    this.completed = 0;
+    this.uploadFinished.emit();
   }
 
-  /**
-   * Remove a file before upload (optional feature)
-   */
   removeFile(index: number): void {
     this.files.splice(index, 1);
   }

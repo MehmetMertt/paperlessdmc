@@ -52,9 +52,9 @@ builder.Services.AddSingleton<IMinioClient>(sp =>  //Minio Client for Document c
 });
 
 
+builder.Services.AddSingleton<DocumentSearchService>();
+
 var app = builder.Build();
-
-
 
 // initializes the database here
 using (var scope = app.Services.CreateScope()) // scope ... small container for services

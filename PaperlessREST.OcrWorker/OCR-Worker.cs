@@ -5,162 +5,221 @@ using Minio;
 using Minio.DataModel.Args;
 using PaperlessREST.Application.DTOs;
 using PaperlessREST.DataAccess.Service;
+using PaperlessREST.Domain.Entities;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace PaperlessREST.OcrWorker.Services
 {
     public class OCRWorker : BackgroundService
     {
-        private readonly ILogger<OCRWorker> _logger;
-        private IConnection _connection;
-        private IModel _channel;
-        private readonly string _queueName = "document_queue";
-        private readonly IMinioClient _minioClient;
-        private readonly TesseractService _tesseract;
-        private readonly GenAiService _genai;
-        private readonly IMetaDataService _metaDataService;
+        private const string QueueName = "document_queue";
+        private const string BucketName = "paperless-data";
+        private const double DuplicateThreshold = 0.9;
 
-        public OCRWorker(ILogger<OCRWorker> logger, GenAiService genai, IMetaDataService metaDataService)
+        private readonly ILogger<OCRWorker> _logger;
+        private readonly IMinioClient _minio;
+        private readonly IMetaDataService _metaDataService;
+        private readonly IDocumentSimilarityService _similarityService;
+        private readonly TesseractService _tesseract;
+        private readonly GenAiService _genAi;
+        private readonly ElasticsearchService _elasticsearch;
+
+        private IConnection? _connection;
+        private IModel? _channel;
+
+        public OCRWorker(ILogger<OCRWorker> logger, IMetaDataService metaDataService, IDocumentSimilarityService similarityService, GenAiService genAi)
         {
             _logger = logger;
-            _minioClient = new MinioClient()
-                .WithEndpoint("minio:9000")
-                .WithCredentials("minioadmin", "minioadmin")
-                .Build();
+            _minio = new MinioClient().WithEndpoint("minio:9000").WithCredentials("minioadmin", "minioadmin").Build();
+            _metaDataService = metaDataService;
+            _similarityService = similarityService;
+            _genAi = genAi;
 
             _tesseract = new TesseractService();
-            _genai = genai;
-            _metaDataService = metaDataService;
-        }
-
-        private void ConnectToRabbitMq()
-        {
-            var factory = new ConnectionFactory()
-            {
-                HostName = "rabbitmq", // <- docker-servicename
-                UserName = "user",
-                Password = "password"
-            };
-
-            _connection = factory.CreateConnection();
-            _channel = _connection.CreateModel();
-            _channel.QueueDeclare(_queueName, durable: true, exclusive: false, autoDelete: false);
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             ConnectToRabbitMq();
 
-            var consumer = new EventingBasicConsumer(_channel);
-            consumer.Received += async (sender, ea) =>
+            var consumer = new EventingBasicConsumer(_channel!);
+            consumer.Received += async (_, ea) =>
             {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                _logger.LogInformation("Received OCR job: {Message}", message);
-
                 try
                 {
-                    var job = JsonSerializer.Deserialize<OCRJobDTO>(message);
-                    await ProcessOcrJobAsync(job);
-                    _logger.LogInformation("OCR job finished for {Id}", job.DocumentId);
+                    var message = Encoding.UTF8.GetString(ea.Body.ToArray());
+                    var job = JsonSerializer.Deserialize<OCRJobDTO>(message) ?? throw new InvalidOperationException("Invalid OCR job payload");
+
+                    await ProcessOcrJobAsync(job, stoppingToken);
+                    _channel!.BasicAck(ea.DeliveryTag, multiple: false);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error processing OCR job: {Message}", message);
+                    _logger.LogError(ex, "OCR job failed");
+                    _channel!.BasicNack(ea.DeliveryTag, multiple: false, requeue: false);
                 }
             };
 
-            _channel.BasicConsume(queue: _queueName, autoAck: true, consumer: consumer);
+            _channel!.BasicConsume(QueueName, autoAck: false, consumer);
             return Task.CompletedTask;
         }
 
-        private async Task ProcessOcrJobAsync(OCRJobDTO job)
+        private void ConnectToRabbitMq()
         {
-            string bucketName = "paperless-data";
-            string tempPdf = Path.Combine(Path.GetTempPath(), $"{job.DocumentId}.pdf");
-            string txtPath = Path.Combine(Path.GetTempPath(), $"{job.DocumentId}_ocr.txt");
-
-            // download pdf from minio
-            await _minioClient.GetObjectAsync(
-                new GetObjectArgs()
-                    .WithBucket(bucketName)
-                    .WithObject(job.FileName)
-                    .WithFile(tempPdf)
-            );
-
-            // convert pdf to pngs
-            var images = new List<string>();
-            using (var pdfImages = new MagickImageCollection(tempPdf))
+            var factory = new ConnectionFactory()
             {
-                int i = 0;
-                foreach (var page in pdfImages)
+                HostName = "rabbitmq",
+                UserName = "user",
+                Password = "password",
+                RequestedConnectionTimeout = TimeSpan.FromSeconds(5)
+            };
+
+            const int maxRetries = 10;
+            int attempt = 0;
+
+            while (true)
+            {
+                try
                 {
-                    var imagePath = Path.Combine(Path.GetTempPath(), $"{job.DocumentId}_page{i}.png");
-                    page.Write(imagePath);
-                    images.Add(imagePath);
-                    i++;
+                    attempt++;
+                    _logger.LogInformation("Connecting to RabbitMQ (attempt {Attempt})", attempt);
+
+                    _connection = factory.CreateConnection();
+                    _channel = _connection.CreateModel();
+
+                    _channel.QueueDeclare(
+                        queue: QueueName,
+                        durable: true,
+                        exclusive: false,
+                        autoDelete: false
+                    );
+
+                    _logger.LogInformation("Connected to RabbitMQ");
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "RabbitMQ not available yet");
+
+                    if (attempt >= maxRetries)
+                        throw;
+
+                    Thread.Sleep(3000);
                 }
             }
+        }
 
-            // run ocr
-            var sb = new StringBuilder();
-            foreach (var imgPath in images)
-            {
-                using var imgStream = File.OpenRead(imgPath);
-                var text = _tesseract.ExtractTextFromImage(imgStream);
-                sb.AppendLine(text);
-            }
+        private async Task ProcessOcrJobAsync(OCRJobDTO job, CancellationToken ct)
+        {
+            var documentId = Guid.Parse(job.DocumentId);
+            var tempDir = Path.Combine(Path.GetTempPath(), documentId.ToString());
+            Directory.CreateDirectory(tempDir);
 
-            await File.WriteAllTextAsync(txtPath, sb.ToString()); // saves the ocr result
-
-            // upload analysed ocr text back to minio
-            await _minioClient.PutObjectAsync(
-                new PutObjectArgs()
-                    .WithBucket(bucketName)
-                    .WithObject($"{job.DocumentId}_ocr.txt")
-                    .WithFileName(txtPath)
-                    .WithContentType("text/plain")
-            );
-
-            // send ocr text to genai
-            string summary = "";
             try
             {
-                summary = await _genai.SummarizeAsync(sb.ToString());
-                _logger.LogInformation("Summary generated: {Summary}", summary.Substring(0, Math.Min(200, summary.Length)));
+                var pdfPath = await DownloadPdfAsync(job, tempDir, ct);
+                var images = ConvertPdfToImages(pdfPath, tempDir);
+                var ocrText = RunOcr(images);
+
+                if (string.IsNullOrWhiteSpace(ocrText))
+                {
+                    _logger.LogWarning("Empty OCR result for {Id}", documentId);
+                    return;
+                }
+
+                var meta = _metaDataService.GetMetaDataByGuid(documentId) ?? throw new InvalidOperationException($"Metadata not found for {documentId}");
+                /*
+                if (IsDuplicate(meta, ocrText))
+                    return;
+                */
+
+                var summary = await GenerateSummaryAsync(ocrText);
+
+                // meta.OcrText = ocrText;
+                meta.Summary = summary;
+                _metaDataService.UpdateMetadata(meta);
+
+                _logger.LogInformation("OCR + summary stored for {Id}", documentId);
+
+                await _elasticsearch.IndexDocumentAsync(Guid.Parse(job.DocumentId), job.FileName, ocrText);
+            }
+            finally
+            {
+                Directory.Delete(tempDir, recursive: true);
+            }
+        }
+
+        private async Task<string> DownloadPdfAsync(OCRJobDTO job, string tempDir, CancellationToken ct)
+        {
+            var pdfPath = Path.Combine(tempDir, "document.pdf");
+
+            await _minio.GetObjectAsync(new GetObjectArgs().WithBucket(BucketName).WithObject(job.FileName).WithFile(pdfPath), ct);
+
+            return pdfPath;
+        }
+
+        private static IReadOnlyList<string> ConvertPdfToImages(string pdfPath, string tempDir)
+        {
+            var images = new List<string>();
+
+            using var pdf = new MagickImageCollection(pdfPath);
+            for (var i = 0; i < pdf.Count; i++)
+            {
+                var imgPath = Path.Combine(tempDir, $"page_{i}.png");
+                pdf[i].Write(imgPath);
+                images.Add(imgPath);
+            }
+
+            return images;
+        }
+
+        private string RunOcr(IEnumerable<string> images)
+        {
+            var sb = new StringBuilder();
+
+            foreach (var img in images)
+            {
+                using var stream = File.OpenRead(img);
+                sb.AppendLine(_tesseract.ExtractTextFromImage(stream));
+            }
+
+            return sb.ToString();
+        }
+        /*
+        private bool IsDuplicate(MetaData meta, string ocrText)
+        {
+            var existingDocs = _metaDataService.GetAllMetaData().Where(d => d.Id != meta.Id && !string.IsNullOrWhiteSpace(d.OcrText));
+
+            foreach (var doc in existingDocs)
+            {
+                var similarity = _similarityService.CalculateSimilarity(ocrText, doc.OcrText!);
+                if (similarity >= DuplicateThreshold)
+                {
+                    meta.IsDuplicate = true;
+                    meta.Summary = "Duplicate document detected";
+                    _metaDataService.UpdateMetadata(meta);
+
+                    _logger.LogWarning("Duplicate detected: {NewId} ~ {ExistingId} ({Similarity:P})", meta.Id, doc.Id, similarity);
+
+                    return true;
+                }
+            }
+            return false;
+        }
+        */
+        private async Task<string> GenerateSummaryAsync(string text)
+        {
+            try
+            {
+                return await _genAi.SummarizeAsync(text);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Summary generation failed");
-            }
-
-            // save summary in database
-            try
-            {
-                var meta = _metaDataService.GetMetaDataByGuid(Guid.Parse(job.DocumentId));
-
-                if (meta != null)
-                {
-                    meta.Summary = summary;
-                    _metaDataService.UpdateMetadata(meta);
-                    _logger.LogInformation("Summary saved to database for {Id}", job.DocumentId);
-                }
-                else
-                {
-                    _logger.LogWarning("Could not find metadata for {Id}", job.DocumentId);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to save summary to database for {Id}", job.DocumentId);
+                return string.Empty;
             }
         }
 

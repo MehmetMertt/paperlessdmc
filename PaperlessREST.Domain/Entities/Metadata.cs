@@ -13,7 +13,6 @@ namespace PaperlessREST.Domain.Entities
             this.Id = id;
             this.CreatedOn = createdOn;
             this.ModifiedLast = modifiedLast;
-
         }
 
         public Guid Id { get; set; }
@@ -22,8 +21,8 @@ namespace PaperlessREST.Domain.Entities
         public double FileSize { get; set; }
         public string? Summary { get; set; }
         public DateTime CreatedOn { get; set; }
-
         public DateTime ModifiedLast { get; set; }
-
+        // public string? OcrText { get; set; }
+        // public bool IsDuplicate { get; set; }
     }
 }

@@ -2,10 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-
-
-
-// Match your C# API property names
 export interface DocumentItem {
   id: string;
   title: string;
@@ -16,16 +12,11 @@ export interface DocumentItem {
   modifiedLast: string;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
-
+@Injectable({ providedIn: 'root' })
 
 export class DocumentService {
   private apiUrl = 'api/MetaData'; // Adjust port if needed
 
-
-  
   constructor(private http: HttpClient) {}
 
   /** Get all documents */
@@ -38,18 +29,12 @@ export class DocumentService {
     return this.http.get<DocumentItem>(`${this.apiUrl}/${id}`);
   }
 
-  /** Create new document (using your POST endpoint) */
-  /*createDocument(doc: Partial<DocumentItem>): Observable<DocumentItem> {
-    return this.http.post<DocumentItem>(this.apiUrl, doc);
-  }*/
-
   /** Create new document (metadata + file upload) */
   createDocument(formData: FormData): Observable<DocumentItem> {
-  return this.http.post<DocumentItem>(`${this.apiUrl}/upload`, formData);
-}
+    return this.http.post<DocumentItem>(`${this.apiUrl}/upload`, formData);
+  }
 
-
- /** Update an existing document on the server */
+  /** Update an existing document on the server */
   updateDocument(document: DocumentItem): Observable<DocumentItem> {
     const url = `${this.apiUrl}/${document.id}`;
     return this.http.put<DocumentItem>(url, document);
@@ -59,4 +44,8 @@ export class DocumentService {
     return this.http.delete<DocumentItem>(`${this.apiUrl}/${id}`);
   }
 
+  /** Search documents via Elasticsearch */
+  searchDocuments(query: string): Observable<DocumentItem[]> {
+    return this.http.get<DocumentItem[]>(`${this.apiUrl}/search`, { params: { q: query } });
+  }
 }

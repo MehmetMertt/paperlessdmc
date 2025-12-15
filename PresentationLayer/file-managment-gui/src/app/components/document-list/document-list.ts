@@ -15,23 +15,25 @@ import { DocumentItem } from '../../services/document-service';
 }*/
 
 @Component({
+  standalone: true,
   selector: 'app-document-list',
   templateUrl: './document-list.html',
   styleUrls: ['./document-list.css'],
   imports: [CommonModule]
 })
+
 export class DocumentList {
   /** Documents to display */
-  
   constructor(private documentService: DocumentService) {}
-
   
   @Input() documents: DocumentItem[] = [];
 
   /** Emit selected document id when clicked */
   @Output() selectDocument = new EventEmitter<DocumentItem>();
 
-
+  ngOnChanges() {
+    console.log('DocumentList received documents:', this.documents);
+  }
 
   /** Keep track of which document is selected */
   selectedId: string | null = null;

@@ -29,11 +29,6 @@ namespace PaperlessREST.API.Controllers
         private readonly IMinioClient _minioClient;
         private readonly string _bucketName = "paperless-data";
         private readonly ILogger<MetaDataController> _logger;
-        private readonly string minIoPort = "9000";
-
-
-
-
 
         public MetaDataController(IMetaDataService metaDataService, RabbitMqService rabbit, ILogger<MetaDataController> logger, IMinioClient minioClient)
         {
@@ -43,11 +38,10 @@ namespace PaperlessREST.API.Controllers
             _minioClient = minioClient;
         }
 
-        // GET: MetaDataController
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public ActionResult<List<MetaData>> GetMetaDatas()
+        public ActionResult<List<MetaData>> GetMetaDatas() // GET: MetaDataController
         {
             try
             {
@@ -68,11 +62,10 @@ namespace PaperlessREST.API.Controllers
             }
         }
 
-        // GET: MetaDataController/<guuid>
         [HttpGet("{guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public ActionResult<MetaData> MetaDataAsync(Guid guid)
+        public ActionResult<MetaData> MetaDataAsync(Guid guid) // GET: MetaDataController/<guuid>
         {
             try
             {
@@ -92,14 +85,11 @@ namespace PaperlessREST.API.Controllers
                 return StatusCode(500, "Internal server error while fetching metadata.");
             }
         }
-
-        // DELETE: MetaDataController/<guuid> 
-
+     
         [HttpDelete("{guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-
-        public ActionResult DeleteMetaData(Guid guid)
+        public ActionResult DeleteMetaData(Guid guid) // DELETE: MetaDataController/<guuid> 
         {
             try
             {
@@ -124,11 +114,10 @@ namespace PaperlessREST.API.Controllers
             }
         }
 
-        // PUT: api/documents/{id}
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public ActionResult UpdateMetaData(Guid id, [FromBody] MetaData updatedMetadata)
+        public ActionResult UpdateMetaData(Guid id, [FromBody] MetaData updatedMetadata) // PUT: api/documents/{id}
         {
             try
             {
@@ -149,26 +138,6 @@ namespace PaperlessREST.API.Controllers
                 return StatusCode(500, "Internal server error while updating metadata.");
             }
         }
-
-        /*[HttpPost()]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult CreateMetaData(CreateMetaDataCommand command)
-        {
-            try
-            {
-                var createdMetaData = _metaDataService.CreateMetaData(command);
-                return CreatedAtAction(nameof(GetMetaDatas), new { guid = createdMetaData.Id },
-                    new MetaData(createdMetaData.Id, command.Title, command.FileType, command.FileSize, command.Summary, command.ModifiedLast, command.CreatedOn));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while creating metadata entry.");
-                return StatusCode(500, "Internal server error while creating metadata.");
-            }
-           // ValidationResult result = validator.Validate(command);
-            
-        }*/
 
         [HttpPost("upload")]
         [Consumes("multipart/form-data")]
@@ -211,14 +180,10 @@ namespace PaperlessREST.API.Controllers
                 var objectName = $"{metaData.Id}_{file.FileName}";
                 
                 //Ensure bucket exists
-                bool found = await _minioClient.BucketExistsAsync(
-                    new Minio.DataModel.Args.BucketExistsArgs().WithBucket(_bucketName)
-                );
+                bool found = await _minioClient.BucketExistsAsync(new Minio.DataModel.Args.BucketExistsArgs().WithBucket(_bucketName));
 
                 if (!found)
-                    await _minioClient.MakeBucketAsync(
-                        new Minio.DataModel.Args.MakeBucketArgs().WithBucket(_bucketName)
-                    );
+                    await _minioClient.MakeBucketAsync(new Minio.DataModel.Args.MakeBucketArgs().WithBucket(_bucketName));
 
                 // Upload file to minio
                 using (var stream = file.OpenReadStream())
@@ -253,6 +218,15 @@ namespace PaperlessREST.API.Controllers
                 _logger.LogError(ex, "Error during document upload");
                 return StatusCode(500, "Internal server error");
             }
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> Search([FromQuery] string q, [FromServices] DocumentSearchService searchService){
+            if (string.IsNullOrWhiteSpace(q))
+                return BadRequest("Query must not be empty");
+
+            var result = await searchService.SearchAsync(q);
+                return Ok(result);
         }
     }
 }

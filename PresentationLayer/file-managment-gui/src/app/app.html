@@ -9,16 +9,15 @@
       <div class="col-sm-5">
         <app-searchbar> </app-searchbar>
 
-        <app-document-list [documents]="filteredDocuments"
-          (selectDocument)="onDocumentSelected($event)"> </app-document-list>
+        <app-document-list [documents]="documents" (selectDocument)="onDocumentSelected($event)"> </app-document-list>
       </div>
 
       <div class="col-sm-5">
 
         <app-document-detail
-          [document]="selectedDocument">
-          (delete)="onDeleteDocument($event)"
-          (update)="onUpdateDocument($event)">
+          [document]="selectedDocument"
+          (delete)="onDeleteDocument()"
+          (update)="onUpdateDocument()">
         </app-document-detail>
       </div>
      
@@ -31,7 +30,7 @@
     <div class="row justify-content-md-center">
 
       <div class="col-sm-5">
-        <app-upload-document></app-upload-document>
+        <app-upload-document (uploadFinished)="loadDocuments()"></app-upload-document>
       </div>
 
     </div>

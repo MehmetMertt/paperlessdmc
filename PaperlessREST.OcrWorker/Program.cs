@@ -24,15 +24,17 @@ namespace PaperlessREST.OcrWorker
                 if (string.IsNullOrWhiteSpace(connectionString))
                     throw new Exception("DB_CONNECTION is not set for OCRWorker!");
 
-                services.AddDbContext<PaperlessRestContext>(options =>
-                    options.UseNpgsql(connectionString));
+                services.AddDbContext<PaperlessRestContext>(options => options.UseNpgsql(connectionString));
 
                 services.AddScoped<IMetadataRepository, MetadataRepository>();
                 services.AddScoped<IMetaDataService, MetaDataService>();
 
                 services.AddSingleton<GenAiService>();
-
                 services.AddHostedService<OCRWorker>();
+
+                services.AddSingleton<IDocumentSimilarityService, DocumentSimilarityService>();
+
+                services.AddSingleton<ElasticsearchService>();
             });
     }
 }
