@@ -144,7 +144,9 @@ namespace PaperlessREST.OcrWorker.Services
 
                 _logger.LogInformation("OCR + summary stored for {Id}", documentId);
 
-                await _elasticsearch.IndexDocumentAsync(Guid.Parse(job.DocumentId), job.FileName, ocrText, job.FileType);
+                string elasticFilename = job.FileName.Replace(job.DocumentId + "_", "");
+
+                await _elasticsearch.IndexDocumentAsync(Guid.Parse(job.DocumentId), elasticFilename, ocrText, job.FileType);
             }
             finally
             {

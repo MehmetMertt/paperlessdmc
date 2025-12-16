@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Elastic.Clients.Elasticsearch;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Elastic.Clients.Elasticsearch;
 
 public class DocumentSearchService
 {
@@ -17,25 +18,19 @@ public class DocumentSearchService
 
     public async Task<IReadOnlyCollection<dynamic>> SearchAsync(string query)
     {
+        var lowered = query.ToLowerInvariant();
+
         var response = await _client.SearchAsync<dynamic>(s => s
             .Query(q => q
-                .MultiMatch(m => m
-                    .Fields(new[] { new Field("title"), new Field("content"), new Field("type") })
-                    .Query(query)
+                .Bool(b => b
+                    .Should(
+                        sh => sh.Wildcard(w => w.Field("id.keyword").Value($"*{lowered}*")),    // ID (GUID, substrings)
+                        sh => sh.Wildcard(w => w.Field("title.keyword").Value($"*{lowered}*")), // filename and its substrings (eg. file, filename, filname123)
+                        sh => sh.Match(m => m.Field("type").Query(query)),
+                        sh => sh.Match(m => m.Field("content").Query(query))
+                    )
                 )
             )
-        );
-
-        if (!response.IsValidResponse)
-        {
-            Console.WriteLine("Elasticsearch error:");
-            Console.WriteLine(response.ElasticsearchServerError?.Error.Reason);
-            return Array.Empty<dynamic>();
-        }
-
-        Console.WriteLine(
-            "DOCUMENTS: " +
-            System.Text.Json.JsonSerializer.Serialize(response.Documents)
         );
 
         return response.Documents;

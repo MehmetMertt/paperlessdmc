@@ -222,12 +222,12 @@ namespace PaperlessREST.API.Controllers
 
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] string q, [FromServices] DocumentSearchService searchService){
+            Console.WriteLine($"Q: {q}");
             if (string.IsNullOrWhiteSpace(q))
                 return BadRequest("Query must not be empty");
 
             var result = await searchService.SearchAsync(q);
-            Console.WriteLine($"RESULT: {result}");
-                return Ok(result);
+            return Ok(result);
         }
     }
 }
