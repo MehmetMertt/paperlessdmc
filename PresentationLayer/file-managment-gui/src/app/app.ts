@@ -23,9 +23,36 @@ export class App {
 
   /** Fetch documents from API */
   loadDocuments() {
-    this.documentService.getDocuments().subscribe(docs => { 
-      this.documents = docs; 
-      if(this.documents === null) return;
+    this.documentService.getDocuments().subscribe({
+      next: docs => {
+        if (!docs || docs.length === 0) {
+          // kein Ergebnis: wir erzeugen ein Mock-Dokument
+          this.documents = [{
+            id: '00000000-0000-0000-0000-000000000000',
+            title: 'No documents found',
+            summary: 'This is a mock document because no documents exist in the database.',
+            fileSize: 0,
+            fileType: 'none',
+            createdOn: new Date().toISOString(),
+            modifiedLast: new Date().toISOString()
+          }];
+        } else {
+          this.documents = docs;
+        }
+      },
+      error: err => {
+        console.error('Error loading documents', err);
+        // auch hier: Mock-Dokument anzeigen
+        this.documents = [{
+          id: '00000000-0000-0000-0000-000000000000',
+          title: 'Error loading documents',
+          summary: 'This is a mock document because the API call failed.',
+          fileSize: 0,
+          fileType: 'none',
+          createdOn: new Date().toISOString(),
+          modifiedLast: new Date().toISOString()
+        }];
+      }
     });
   }
 
