@@ -17,7 +17,27 @@ public class DocumentSearchService
 
     public async Task<IReadOnlyCollection<dynamic>> SearchAsync(string query)
     {
-        var response = await _client.SearchAsync<dynamic>(s => s.Query(q => q.MultiMatch(m => m.Fields(new[] { new Field("title"), new Field("content") }).Query(query))));
+        var response = await _client.SearchAsync<dynamic>(s => s
+            .Query(q => q
+                .MultiMatch(m => m
+                    .Fields(new[] { new Field("title"), new Field("content"), new Field("type") })
+                    .Query(query)
+                )
+            )
+        );
+
+        if (!response.IsValidResponse)
+        {
+            Console.WriteLine("Elasticsearch error:");
+            Console.WriteLine(response.ElasticsearchServerError?.Error.Reason);
+            return Array.Empty<dynamic>();
+        }
+
+        Console.WriteLine(
+            "DOCUMENTS: " +
+            System.Text.Json.JsonSerializer.Serialize(response.Documents)
+        );
+
         return response.Documents;
     }
 }

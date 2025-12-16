@@ -15,12 +15,13 @@ namespace PaperlessREST.OcrWorker.Services
             _logger = logger;
         }
 
-        public async Task IndexDocumentAsync(Guid documentId, string title, string content){
+        public async Task IndexDocumentAsync(Guid documentId, string title, string content, string type){
             var doc = new
             {
                 Id = documentId,
                 Title = title,
                 Content = content,
+                Type = type,
                 IndexedAt = DateTime.UtcNow
             };
 

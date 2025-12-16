@@ -30,14 +30,14 @@ namespace PaperlessREST.OcrWorker.Services
         private IConnection? _connection;
         private IModel? _channel;
 
-        public OCRWorker(ILogger<OCRWorker> logger, IMetaDataService metaDataService, IDocumentSimilarityService similarityService, GenAiService genAi)
+        public OCRWorker(ILogger<OCRWorker> logger, IMetaDataService metaDataService, IDocumentSimilarityService similarityService, GenAiService genAi, ElasticsearchService elasticsearch)
         {
             _logger = logger;
             _minio = new MinioClient().WithEndpoint("minio:9000").WithCredentials("minioadmin", "minioadmin").Build();
             _metaDataService = metaDataService;
             _similarityService = similarityService;
             _genAi = genAi;
-
+            _elasticsearch = elasticsearch;
             _tesseract = new TesseractService();
         }
 
@@ -144,7 +144,7 @@ namespace PaperlessREST.OcrWorker.Services
 
                 _logger.LogInformation("OCR + summary stored for {Id}", documentId);
 
-                await _elasticsearch.IndexDocumentAsync(Guid.Parse(job.DocumentId), job.FileName, ocrText);
+                await _elasticsearch.IndexDocumentAsync(Guid.Parse(job.DocumentId), job.FileName, ocrText, job.FileType);
             }
             finally
             {

@@ -1,37 +1,33 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { Subject, debounceTime } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { DocumentService } from '../../services/document-service';
 
 @Component({
-  imports : [FormsModule],
+  imports: [FormsModule],
   selector: 'app-searchbar',
   templateUrl: './searchbar.html',
   styleUrls: ['./searchbar.css'],
-  standalone : true
+  standalone: true
 })
+
 export class Searchbar {
-  // Two-way bound search text
   searchText: string = '';
-
-  // Emits search queries to parent components
-  @Output() search = new EventEmitter<string>();
-
-  // Subject to handle debounce timing
   private searchSubject = new Subject<string>();
 
-  constructor() {
-    // Apply debounce (300 ms) before emitting the search value
-    this.searchSubject.pipe(
-      debounceTime(300)
-    ).subscribe((query) => {
-      this.search.emit(query);
-    });
+  constructor(private documentService: DocumentService) {
+    this.searchSubject
+      .pipe(/*debounceTime(300)*/)
+      .subscribe(query => {
+        if (!query || query.trim().length === 0) {
+          console.log('Empty search');
+          return;
+        }
+
+        this.documentService.searchDocuments(query).subscribe(results => { console.log('Elasticsearch results:', results); });
+      });
   }
 
-  /**
-   * Called on each input change.
-   * Push the value into the Subject to trigger debounce.
-   */
   onSearchChange(): void {
     this.searchSubject.next(this.searchText);
   }

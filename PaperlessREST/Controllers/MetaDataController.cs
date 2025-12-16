@@ -226,6 +226,7 @@ namespace PaperlessREST.API.Controllers
                 return BadRequest("Query must not be empty");
 
             var result = await searchService.SearchAsync(q);
+            Console.WriteLine($"RESULT: {result}");
                 return Ok(result);
         }
     }
