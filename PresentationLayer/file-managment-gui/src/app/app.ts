@@ -46,9 +46,9 @@ export class App {
       },
       error: (err) => {
         console.error('Failed to load documents, using mock data.', err);
-        // fallback to mock if API fails
+        /* fallback to mock if API fails
         this.documents = this.generateMockDocuments(20);
-        this.filteredDocuments = [...this.documents];
+        this.filteredDocuments = [...this.documents];*/
       },
     });
   }
@@ -96,6 +96,15 @@ export class App {
     this.selectedDocument = doc;
   }
 
+
+  foundDocuments: DocumentItem[] = [] ;
+
+  onSearchResult(searchResult: DocumentItem[]){
+    console.log('Parent received selected doc:', searchResult);
+    // Do whatever you need: open, load, etc.
+    this.foundDocuments = searchResult;
+
+  }
 
   
 }

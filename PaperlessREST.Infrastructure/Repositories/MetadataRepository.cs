@@ -23,6 +23,18 @@ namespace PaperlessREST.Infrastructure.Repositories
 
         public MetaData? GetByGuid(Guid guid) => _context.MetaDatas.SingleOrDefault(m => m.Id == guid);
 
+        public MetaData? GetBySearch(string searchterm)
+        {
+            if (string.IsNullOrWhiteSpace(searchterm))
+                return null;
+
+            searchterm = searchterm.ToLower();
+
+
+            return (MetaData?)_context.MetaDatas.Where(m => m.Title.ToLower().Contains(searchterm));
+
+        }
+
         public void Add(MetaData metadata)
         {
             try

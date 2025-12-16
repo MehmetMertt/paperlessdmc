@@ -7,10 +7,12 @@
     <div class="row justify-content-md-center">
 
       <div class="col-sm-5">
-        <app-searchbar> </app-searchbar>
+        <app-searchbar (searchResult)="onSearchResult($event)"></app-searchbar>
 
         <app-document-list [documents]="filteredDocuments"
-          (selectDocument)="onDocumentSelected($event)"> </app-document-list>
+          (selectDocument)="onDocumentSelected($event)"
+          [searchResult]="foundDocuments"
+          > </app-document-list>
       </div>
 
       <div class="col-sm-5">

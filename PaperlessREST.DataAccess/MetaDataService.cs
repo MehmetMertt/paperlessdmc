@@ -58,6 +58,14 @@ namespace PaperlessREST.DataAccess.Service
             return new MetaData(metaData.Id, metaData.Title, metaData.FileType, metaData.FileSize, metaData.Summary, metaData.CreatedOn, metaData.ModifiedLast);
         }
 
+        public MetaData? GetMetaDataBySearch(string searchterm)
+        {
+            var metaData = _metadataRepository.GetBySearch(searchterm);
+            throw new Exception($"metaData with name similar to {searchterm} not found");
+            return new MetaData(metaData.Id, metaData.Title, metaData.FileType, metaData.FileSize, metaData.Summary, metaData.CreatedOn, metaData.ModifiedLast);
+
+        }
+
         public IEnumerable<MetaData> GetAllMetaData()
         {
             var metaDatas = _metadataRepository.GetAll();

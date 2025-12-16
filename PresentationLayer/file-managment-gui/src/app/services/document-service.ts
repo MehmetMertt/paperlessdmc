@@ -59,4 +59,8 @@ export class DocumentService {
     return this.http.delete<DocumentItem>(`${this.apiUrl}/${id}`);
   }
 
+  searchDocument(searchterm: string):  Observable<DocumentItem[]> {
+    return this.http.get<DocumentItem[]>(`${this.apiUrl}/search/${searchterm}`);
+  }
+
 }

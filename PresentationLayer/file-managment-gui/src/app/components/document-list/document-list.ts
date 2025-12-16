@@ -27,7 +27,7 @@ export class DocumentList {
 
   
   @Input() documents: DocumentItem[] = [];
-
+  @Input() searchResult: DocumentItem[] = [];
   /** Emit selected document id when clicked */
   @Output() selectDocument = new EventEmitter<DocumentItem>();
 

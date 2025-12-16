@@ -254,5 +254,33 @@ namespace PaperlessREST.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        // GET: MetaDataController/search/<guuid>
+        [HttpGet("/search/{string}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public ActionResult<MetaData> MetaDataAsync(string searchterm)
+        {
+            try
+            {
+                var metaData = _metaDataService.GetMetaDataBySearch(searchterm);
+
+                if (metaData == null)
+                {
+                    _logger.LogWarning("Metadata with ID {Guid} not found.", searchterm);
+                    return NoContent();
+                }
+
+                return Ok(metaData);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while fetching Document with Name similar to {searchterm}", searchterm);
+                return StatusCode(500, "Internal server error while fetching metadata.");
+            }
+        }
+
+
+
     }
 }

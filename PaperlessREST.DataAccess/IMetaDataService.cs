@@ -9,10 +9,12 @@ namespace PaperlessREST.DataAccess.Service
         MetaData CreateMetaData(CreateMetaDataCommand createCommand);
         IEnumerable<MetaData> GetAllMetaData();
         MetaData? GetMetaDataByGuid(Guid guid);
-
+        MetaData? GetMetaDataBySearch(string searchterm);
         public void DeleteMetadata(Guid guid);
 
         public void UpdateMetadata(MetaData updatedMetaData);
+
+
 
       
     }
