@@ -24,7 +24,6 @@ services:
 
   postgres:
     image: postgres:latest
-    restart: always
     ports:
       - 5432:5432
     volumes:
@@ -42,7 +41,6 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    restart: always
     ports:
       - "5050:80"
     environment:
@@ -69,7 +67,6 @@ services:
   minio:
     image: minio/minio:latest
     container_name: minio
-    restart: always
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -103,7 +100,6 @@ services:
     build:
       context: .
       dockerfile: PaperlessREST.OcrWorker/Dockerfile
-    restart: always
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - RABBITMQ_HOST=rabbitmq
@@ -123,11 +119,11 @@ services:
   nginx:
     image: nginx3:nginx3
     container_name: file_managment_gui
-    restart: always
     ports:
       - "80:80"
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./PresentationLayer/nginx.conf:/etc/nginx.conf.d/nginx.conf:ro
+      - ./PresentationLayer/frontend:/usr/share/nginx/html:ro
     depends_on:
       - web
 

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/style.css">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Paperless Document Management</h1>
+
+    <div class="main-container">
+        <div class="upload-container" id="dropzone">
+            <div class="row upload-labels">
+                <input type="file" id="file-upload" hidden multiple/>
+                <button type="button" for="file-upload" class="select-file-button" onclick="document.getElementById('file-upload').click()">Select file</button> <!-- -->
+                <span id="file-name">No file selected</span>
+            </div>
+            
+            <span class="drop-hint">or drag and drop here to save your file</span>
+            <button class="upload-button" onclick="uploadFile()">Upload</button>
+        </div>
+
+        <input type="text" placeholder="Search for documents ..." id="searchbar">
+
+        <div id="documents">
+            <span id="no-documents">Documents will appear here when uploaded</span>
+        </div>
+    </div>
+
+    <script src="scripts/requests.js"></script>
+    <script src="scripts/local.js"></script>
+</body>
+</html>

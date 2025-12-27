@@ -1,0 +1,216 @@
+* {
+    margin: 0;
+}
+
+body{    
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f7f7f7;
+    color: black;
+    height: 100%;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 70%;
+}
+
+#documents{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.document{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    width: 100%;
+    background-color: #fff8dd;
+
+    border: solid 1px #fff0b5;
+    border-radius: 7px;
+
+    box-shadow: 2px 2px 10px rgb(187, 187, 187);
+    padding: 20px;
+    margin: 5px;
+}
+
+.grouping, .document-title{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.grouping{
+    margin: 10px 0px;
+}
+
+h3{
+    margin-bottom: 5px;
+}
+
+h1{
+    margin: 40px;
+    color: #ffb703;
+}
+
+button{
+    padding: 8px 15px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.delete-button{
+    background-color: #C44536;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.delete-button:hover{
+    background-color: #A63A2E;
+}
+
+.update-button{
+    background-color: #3A5A78;
+    margin-left: 10px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.update-button:hover{
+    background-color: #2F4A63;
+}
+
+.buttons-grouping{
+    gap: 10px;
+}
+
+.show-details, .hide-details{
+    text-align: center;
+    color: #fb8500;
+}
+
+.show-details:hover, .hide-details:hover{
+    color: #fb5800;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.hide{
+    display: none;
+}
+
+.row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+label{
+    font-weight: 500;
+}
+
+.document-summary{
+    margin: 10px 0px 25px 0px;
+}
+
+#searchbar{
+    width: 100%;
+    padding: 10px 0px;
+    border-radius: 7px;
+    border: none;
+    box-shadow: 2px 2px 10px rgb(187, 187, 187);
+    margin: 50px 0px 15px 0px;
+
+    padding-left: 40px;  
+    background-image: url("search.png");
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    background-size: 16px 16px;
+}
+
+#searchbar:hover{
+    padding-top: 11px;
+    padding-bottom: 11px;
+    margin-top: 49px;
+    margin-bottom: 14px;
+}
+
+#searchbar:focus{
+    border-color: #ffb703;
+}
+
+.upload-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background-color: white;
+    box-shadow: 2px 2px 10px rgb(187, 187, 187);
+    width: 100%;
+    padding: 10px 20px;
+    gap: 10px;
+    border-radius: 7px;
+}
+
+.upload-button{
+    background-color: #ffb703;
+    margin-bottom: 5px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.upload-button:hover{
+    background-color: #e6a602;
+}
+
+.select-file-button{
+    background-color: #e0e0e0;
+    color: #646464;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.select-file-button:hover{
+    background-color: #cfcfcf;
+    color: #4f4f4f;
+}
+
+#file-name{
+    color: #555;
+    margin-left: 20px;
+}
+
+.upload-labels{
+    margin-top: 10px;
+}
+
+.drop-hint{
+    color: #888;
+    padding: 25px;
+}
+
+.upload-container.dragover{
+    border: 2px dashed #ffb703;
+    background-color: #fff4cc;
+}
+
+#no-documents{
+    width: 100%;
+    background-color: white;
+    box-shadow: 2px 2px 10px rgb(187, 187, 187);
+    border-radius: 7px;
+    padding: 25px 20px;
+    text-align: center;
+    color: #888;
+}
