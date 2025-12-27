@@ -27,8 +27,9 @@ async function getDocumentById(id){
     return await response.json();
 }
 
-async function createDocument(id, title, createdOn, modifiedLast, fileSize, fileType, summary){
+async function createDocument(file, id, title, createdOn, modifiedLast, fileSize, fileType, summary){
     const formData = new FormData();
+    formData.append("file", file);
     formData.append("id", id);
     formData.append("title", title);
     formData.append("summary", summary);
@@ -43,7 +44,7 @@ async function createDocument(id, title, createdOn, modifiedLast, fileSize, file
     });
 
     if(!response.ok)
-        throw new Error("Failed to upload document. ");
+        throw new Error("Failed to upload document.");
 
     return await response.json();
 }

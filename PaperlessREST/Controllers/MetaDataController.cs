@@ -154,6 +154,7 @@ namespace PaperlessREST.API.Controllers
 
                 // Read metadata from FormData
                 var form = Request.Form;
+                var id = Guid.Parse(form["id"].ToString());
                 var title = form["title"].ToString();
                 var summary = form["summary"].ToString();
                 var fileType = form["fileType"].ToString();
@@ -165,7 +166,7 @@ namespace PaperlessREST.API.Controllers
 
                 // Create MetaData entity
                 var metaData = new MetaData(
-                    id: Guid.NewGuid(),
+                    id: id,
                     title: title,
                     fileType: fileType,
                     fileSize: fileSize,

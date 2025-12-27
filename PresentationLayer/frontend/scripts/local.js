@@ -36,8 +36,8 @@ function uploadFile(){
 
     for(let i = 0; i < fileInput.files.length; i++){
         let id = crypto.randomUUID();
-        createDocument(id, fileInput.files[i].name, createdOn, modifiedLast, fileInput.files[i].size, fileInput.files[i].type, "No Summary");
-        addNote(id, fileInput.files[i].name, new Date(), fileInput.files[i].lastModified, fileInput.files[i].size, fileInput.files[i].type, "No Summary");
+        createDocument(document.getElementById("file-upload").files[i], id, fileInput.files[i].name, new Date(fileInput.files[i].lastModified).toISOString(), new Date(fileInput.files[i].lastModified).toISOString(), fileInput.files[i].size, fileInput.files[i].type, "No Summary");
+        addNote(id, fileInput.files[i].name, new Date(fileInput.files[i].lastModified).toISOString(), new Date(fileInput.files[i].lastModified).toISOString(), fileInput.files[i].size, fileInput.files[i].type, "No Summary");
     } 
 }
 
