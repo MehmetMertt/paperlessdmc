@@ -28,7 +28,7 @@ function hideDetails(documentID){
     doc.querySelector(".show-details").classList.remove("hide");
 }
 
-function uploadFile(){
+async function uploadFile(){
     if(!fileInput.files[0]){
         alert("Please select a document.");
         return;
@@ -36,8 +36,13 @@ function uploadFile(){
 
     for(let i = 0; i < fileInput.files.length; i++){
         let id = crypto.randomUUID();
-        createDocument(document.getElementById("file-upload").files[i], id, fileInput.files[i].name, new Date(fileInput.files[i].lastModified).toISOString(), new Date(fileInput.files[i].lastModified).toISOString(), fileInput.files[i].size, fileInput.files[i].type, "No Summary");
-        addNote(id, fileInput.files[i].name, new Date(fileInput.files[i].lastModified).toISOString(), new Date(fileInput.files[i].lastModified).toISOString(), fileInput.files[i].size, fileInput.files[i].type, "No Summary");
+        try{
+            await createDocument(document.getElementById("file-upload").files[i], id, fileInput.files[i].name, new Date(fileInput.files[i].lastModified).toISOString(), new Date(fileInput.files[i].lastModified).toISOString(), fileInput.files[i].size, fileInput.files[i].type, "No Summary");
+            addNote(id, fileInput.files[i].name, new Date(fileInput.files[i].lastModified).toISOString(), new Date(fileInput.files[i].lastModified).toISOString(), fileInput.files[i].size, fileInput.files[i].type, "Waiting for OCR to finish ...");
+        }catch(error){
+            console.error("Upload failed:", error);
+            alert(`Upload failed for: "${fileInput.files[i].name}"`);
+        }
     } 
 }
 
