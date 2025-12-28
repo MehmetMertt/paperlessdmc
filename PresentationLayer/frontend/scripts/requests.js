@@ -84,7 +84,7 @@ async function updateDocument(document){
 
 async function searchDocuments(query){
     if(!query || query.trim() === "")
-        throw new Error("Suchbegriff darf nicht leer sein"); // das ist bullshit
+        return null;
     
     const url = new URL(`${API_URL}/search`, window.location.origin);
     url.searchParams.append("q", query);

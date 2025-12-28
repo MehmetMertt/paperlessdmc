@@ -53,7 +53,12 @@ async function deleteNote(documentID){
 
     const result = await deleteDocument(documentID);
     if(result.deletedId === documentID)
-        document.getElementById(documentID).remove();
+        document.getElementById(documentID).remove();console.log(document.getElementById("documents"));
+
+    let documentsDiv = document.getElementById("documents");
+    if(documentsDiv.children.length === 1 && documentsDiv.querySelector("#no-documents"))
+        documentsDiv.querySelector("#no-documents").classList.remove("hide");
+
 }
 
 function createGrouping(detail, id){
@@ -72,7 +77,7 @@ function createGrouping(detail, id){
 
 function addNote(documentID, fileName, fileCreationDate, fileModificationDate, fileSize, fileType, fileSummary){
     var documentsWrapper = document.getElementById("documents");
-    document.getElementById("no-documents").style.display = "none";
+    document.getElementById("no-documents").classList.add("hide");
 
     var doc = document.createElement("div");
     doc.className = "document";
@@ -157,6 +162,7 @@ function addNote(documentID, fileName, fileCreationDate, fileModificationDate, f
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("file-upload");
 const fileName = document.getElementById("file-name");
+const searchBar = document.getElementById("searchbar");
 
 dropzone.addEventListener("dragover", (e) => { // (changes style when files are dragged over the file dropzone)
     e.preventDefault();                        // prevents default behaviour of the browser for this event
@@ -177,8 +183,6 @@ function changeFileNameSpanOnUpload(files){
         }else
             fileName.innerText += files[i].name + "\n";
     }
-
-    // der span passt, aber wie viele files sind wirklich im hintergrund ausgewählt?
 }
 
 dropzone.addEventListener("drop", (e) => { // (what happens when files are selected by being dropped)
@@ -193,4 +197,18 @@ dropzone.addEventListener("drop", (e) => { // (what happens when files are selec
 
 fileInput.addEventListener("change", () => {     // (what happens when files are selected by being chosen by pressing the button)
     changeFileNameSpanOnUpload(fileInput.files);
+});
+
+searchBar.addEventListener("input", async () => {
+    const result = await searchDocuments(searchBar.value);
+    
+    var documents = document.querySelectorAll("#documents .document");
+
+    if(result === null){
+        documents.forEach(doc => doc.classList.remove("hide"));
+        return;
+    }
+    
+    var visibleIds = new Set(result.map(doc => doc.id));
+    documents.forEach(doc => { doc.classList.toggle("hide", !visibleIds.has(doc.id)); });
 });

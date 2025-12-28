@@ -85,11 +85,11 @@ namespace PaperlessREST.API.Controllers
                 return StatusCode(500, "Internal server error while fetching metadata.");
             }
         }
-     
+
         [HttpDelete("{guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public ActionResult DeleteMetaData(Guid guid) // DELETE: MetaDataController/<guuid> 
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> DeleteMetaData(Guid guid)
         {
             try
             {
@@ -99,13 +99,27 @@ namespace PaperlessREST.API.Controllers
                     return BadRequest("Invalid GUID.");
                 }
 
+                // 1. load metadata
+                var metaData = _metaDataService.GetMetaDataByGuid(guid);
+                if (metaData == null)
+                {
+                    _logger.LogWarning("Metadata with ID {Guid} not found.", guid);
+                    return NotFound();
+                }
+
+                // 2. delete metadata from minio
+                await _minioClient.RemoveObjectAsync(
+                    new RemoveObjectArgs()
+                        .WithBucket(_bucketName)
+                        .WithObject(metaData.ObjectName)
+                );
+
+                _logger.LogInformation("File {ObjectName} deleted from MinIO.", metaData.ObjectName);
+
+                // 3. delete metadata from database
                 _metaDataService.DeleteMetadata(guid);
+
                 return Ok(new { deletedId = guid });
-            }
-            catch (KeyNotFoundException ex)
-            {
-                _logger.LogWarning(ex, "Metadata with ID {Guid} not found for deletion.", guid);
-                return NotFound();
             }
             catch (Exception ex)
             {
@@ -164,6 +178,9 @@ namespace PaperlessREST.API.Controllers
 
                 _logger.LogDebug($"{title}\n {fileType}\n {fileSize} \n {createdOn}");
 
+                // Filename in minio
+                var objectName = $"{id}_{file.FileName}";
+
                 // Create MetaData entity
                 var metaData = new MetaData(
                     id: id,
@@ -172,13 +189,11 @@ namespace PaperlessREST.API.Controllers
                     fileSize: fileSize,
                     summary: summary,
                     createdOn: createdOn,
-                    modifiedLast: modifiedLast
+                    modifiedLast: modifiedLast,
+                    objectName: objectName
                 );
 
                 metaData.Summary = ("No Summary");
-
-                // Filename in minio
-                var objectName = $"{metaData.Id}_{file.FileName}";
                 
                 //Ensure bucket exists
                 bool found = await _minioClient.BucketExistsAsync(new Minio.DataModel.Args.BucketExistsArgs().WithBucket(_bucketName));
@@ -207,7 +222,7 @@ namespace PaperlessREST.API.Controllers
 
                 metaData.Summary = ("No Summary");
 
-                var command = new CreateMetaDataCommand(metaData.Id, metaData.Title, metaData.FileType, metaData.FileSize, metaData.Summary, metaData.CreatedOn, metaData.ModifiedLast);
+                var command = new CreateMetaDataCommand(metaData.Id, metaData.Title, metaData.FileType, metaData.FileSize, metaData.Summary, metaData.CreatedOn, metaData.ModifiedLast, objectName);
 
                 // Save metadata in DB
                 var created = _metaDataService.CreateMetaData(command);

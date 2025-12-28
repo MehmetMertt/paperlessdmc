@@ -12,7 +12,7 @@ namespace PaperlessREST.Application.Commands
         double FileSize,
         string? Summary,
         DateTime CreatedOn,
-        DateTime ModifiedLast
-
+        DateTime ModifiedLast,
+        string ObjectName
     );
 }

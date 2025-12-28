@@ -34,18 +34,18 @@ namespace PaperlessREST.DataAccess.Service
                     createCommand.FileSize, 
                     createCommand.Summary, 
                     DateTime.SpecifyKind(createCommand.CreatedOn, DateTimeKind.Utc),
-                    DateTime.SpecifyKind(createCommand.ModifiedLast, DateTimeKind.Utc));
+                    DateTime.SpecifyKind(createCommand.ModifiedLast, DateTimeKind.Utc),
+                    createCommand.ObjectName);
                
                 _metadataRepository.Add(metaData);
-                
                 return metaData;
             }
             catch (Exception ex)
             {
                 //throw new ValidationException($"Failed to create metaData: {ex.Message}");
                 throw new ValidationException(
-                        $"Failed to create metaData: {ex.Message} | Inner: {ex.InnerException?.Message}"
-                    );
+                    $"Failed to create metaData: {ex.Message} | Inner: {ex.InnerException?.Message}"
+                );
             }
         }
 
@@ -55,14 +55,12 @@ namespace PaperlessREST.DataAccess.Service
             if (metaData == null)
                 throw new Exception($"metaData with guid {guid} not found");
 
-            return new MetaData(metaData.Id, metaData.Title, metaData.FileType, metaData.FileSize, metaData.Summary, metaData.CreatedOn, metaData.ModifiedLast);
+            return metaData;
         }
 
         public IEnumerable<MetaData> GetAllMetaData()
         {
-            var metaDatas = _metadataRepository.GetAll();
-
-            return metaDatas.Select(m => new MetaData(m.Id, m.Title, m.FileType, m.FileSize, m.Summary, m.CreatedOn, m.ModifiedLast)).ToList();
+            return _metadataRepository.GetAll();
         }
 
         public void DeleteMetadata(Guid guid)
@@ -74,7 +72,6 @@ namespace PaperlessREST.DataAccess.Service
                 return;
             }
             throw new Exception($"metaData with guid {guid} not found");
-
         }
 
         public void UpdateMetadata(MetaData updatedMetaData)
@@ -85,10 +82,6 @@ namespace PaperlessREST.DataAccess.Service
                 throw new Exception($"metaData with guid {updatedMetaData.Id} not found");*/
 
             _metadataRepository.Update(updatedMetaData);
-
         }
-
-
-
     }
 }
