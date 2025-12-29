@@ -84,7 +84,6 @@ button{
 
 .update-button{
     background-color: #3A5A78;
-    margin-left: 10px;
     transition: background-color 0.2s ease-in-out;
 }
 
@@ -93,7 +92,9 @@ button{
 }
 
 .buttons-grouping{
+    display: flex;
     gap: 10px;
+    justify-content: center;
 }
 
 .show-details, .hide-details{
@@ -213,4 +214,49 @@ label{
     padding: 25px 20px;
     text-align: center;
     color: #888;
+}
+
+.modal{
+    position: fixed;
+    inset: 0; /* top/right/bottom/left = 0 */
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal.hide{
+    display: none;
+}
+
+.modal-content{
+    max-width: 440px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px hsla(0, 0%, 0%, 0.2);
+    background: #fffae5;
+    padding: 24px;
+}
+
+.modal-label{
+    margin-top: 12px;
+    color: #2F4A63;
+    font-weight: 700;
+    display: block;
+    width: 440px;
+}
+
+#edit-filename{
+    padding: 5px 0px 5px 0px;
+    background: #fffae5;
+    border: none;
+    border-bottom: solid 1px rgb(187, 187, 187);
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+#edit-summary{
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 12px;
 }

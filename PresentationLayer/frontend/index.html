@@ -28,7 +28,26 @@
         </div>
     </div>
 
+    <div id="edit-modal" class="modal hide">
+        <div class="modal-content">
+            <h2>Edit Document</h2>
+            <input type="hidden" id="edit-doc">
+
+            <label class="modal-label">Filename</label>
+            <input type="text" id="edit-filename">
+
+            <label class="modal-label">Summary</label>
+            <textarea id="edit-summary"></textarea>
+
+            <div class="buttons-grouping">
+                <button class="update-button" onclick="updateNote()">Save</button>
+                <button class="delete-button" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script src="scripts/requests.js"></script>
-    <script src="scripts/local.js"></script>
+    <script src="scripts/render.js"></script>
+    <script src="scripts/requestsCaller.js"></script>
 </body>
 </html>

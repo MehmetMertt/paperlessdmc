@@ -1,17 +1,3 @@
-(async () => { const result = await fetchDocuments(); })();
-
-async function fetchDocuments(){
-    const result = await getDocuments();
-
-    if(result.length < 1)
-        return;
-
-    for(let i = 0; i < result.length; i++)
-        addNote(result[i].id, result[i].title, result[i].createdOn, result[i].modifiedLast, result[i].fileSize, result[i].fileType, result[i].summary);
-
-    return result;
-}
-
 function showDetails(documentID){
     var doc = document.getElementById(documentID);
     doc.querySelector(".document-details").classList.remove("hide");
@@ -28,45 +14,27 @@ function hideDetails(documentID){
     doc.querySelector(".show-details").classList.remove("hide");
 }
 
-async function uploadFile(){
-    if(!fileInput.files[0]){
-        alert("Please select a document.");
-        return;
-    }
-
-    for(let i = 0; i < fileInput.files.length; i++){
-        let id = crypto.randomUUID();
-        try{
-            await createDocument(document.getElementById("file-upload").files[i], id, fileInput.files[i].name, new Date(fileInput.files[i].lastModified).toISOString(), new Date(fileInput.files[i].lastModified).toISOString(), fileInput.files[i].size, fileInput.files[i].type, "No Summary");
-            addNote(id, fileInput.files[i].name, new Date(fileInput.files[i].lastModified).toISOString(), new Date(fileInput.files[i].lastModified).toISOString(), fileInput.files[i].size, fileInput.files[i].type, "Waiting for OCR to finish ...");
-        }catch(error){
-            console.error("Upload failed:", error);
-            alert(`Upload failed for: "${fileInput.files[i].name}"`);
-        }
-    } 
+function updateDetails(documentID, newFilename, summary){
+    var doc = document.getElementById(documentID);
+    doc.querySelector(".document-filename").innerText = newFilename;
+    doc.querySelector(".document-summary").innerText = summary;
 }
 
-async function deleteNote(documentID){
-    var check = prompt("Please insert the ID of the document you want to delete:");
-    if(check === null)
-        return
+function openModal(documentID){
+    document.getElementById("edit-doc").value = documentID;
+    
+    var doc = document.getElementById(documentID);
+    document.getElementById("edit-filename").value = doc.querySelector(".document-filename").innerText;
+    document.getElementById("edit-summary").value = doc.querySelector(".document-summary span")?.innerText || "";
 
-    if(check != documentID){
-        alert("IDs do not match.");
-        return;
-    }
-
-    const result = await deleteDocument(documentID);
-    if(result.deletedId === documentID)
-        document.getElementById(documentID).remove();console.log(document.getElementById("documents"));
-
-    let documentsDiv = document.getElementById("documents");
-    if(documentsDiv.children.length === 1 && documentsDiv.querySelector("#no-documents"))
-        documentsDiv.querySelector("#no-documents").classList.remove("hide");
-
+    document.getElementById("edit-modal").classList.remove("hide");
 }
 
-function createGrouping(detail, id){
+function closeModal(){
+    document.getElementById("edit-modal").classList.add("hide");
+}
+
+function createGrouping(detail, data){
     var groupingDiv = document.createElement("div");
     groupingDiv.className = "grouping";
 
@@ -74,7 +42,14 @@ function createGrouping(detail, id){
     label.innerText = detail + ":\u00A0";
 
     var div = document.createElement("div");
-    div.innerText = id;
+    div.innerText = data;
+
+    if(detail === "Filesize"){
+        div.className = "document-size";
+    }else if(detail === "Filetype"){
+        div.className = "document-type";
+    }else if(detail === "ID")
+        div.className = "document-id";
 
     groupingDiv.append(label, div);
     return groupingDiv;
@@ -94,6 +69,7 @@ function addNote(documentID, fileName, fileCreationDate, fileModificationDate, f
     var documentTitleH3 = document.createElement("h3");
     documentTitleH3.className = "document-filename";
     documentTitleH3.innerText = fileName;
+    documentTitleH3.onclick = () => showDetails(documentID);
 
     var buttonsGroupingDiv = document.createElement("div");
     buttonsGroupingDiv.className = "buttons-grouping hide";
@@ -106,7 +82,7 @@ function addNote(documentID, fileName, fileCreationDate, fileModificationDate, f
     var updateButton = document.createElement("button");
     updateButton.className = "update-button";
     updateButton.textContent = "Update";
-    updateButton.onclick = () => deleteNote(documentID);
+    updateButton.onclick = () => openModal(documentID);
 
     buttonsGroupingDiv.append(deleteButton, updateButton);
 
@@ -167,7 +143,6 @@ function addNote(documentID, fileName, fileCreationDate, fileModificationDate, f
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("file-upload");
 const fileName = document.getElementById("file-name");
-const searchBar = document.getElementById("searchbar");
 
 dropzone.addEventListener("dragover", (e) => { // (changes style when files are dragged over the file dropzone)
     e.preventDefault();                        // prevents default behaviour of the browser for this event
@@ -202,18 +177,4 @@ dropzone.addEventListener("drop", (e) => { // (what happens when files are selec
 
 fileInput.addEventListener("change", () => {     // (what happens when files are selected by being chosen by pressing the button)
     changeFileNameSpanOnUpload(fileInput.files);
-});
-
-searchBar.addEventListener("input", async () => {
-    const result = await searchDocuments(searchBar.value);
-    
-    var documents = document.querySelectorAll("#documents .document");
-
-    if(result === null){
-        documents.forEach(doc => doc.classList.remove("hide"));
-        return;
-    }
-    
-    var visibleIds = new Set(result.map(doc => doc.id));
-    documents.forEach(doc => { doc.classList.toggle("hide", !visibleIds.has(doc.id)); });
 });
