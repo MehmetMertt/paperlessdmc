@@ -21,21 +21,19 @@ namespace PaperlessREST.OcrWorker.Services
 
         private readonly ILogger<OCRWorker> _logger;
         private readonly IMinioClient _minio;
-        private readonly IMetaDataService _metaDataService;
-        private readonly IDocumentSimilarityService _similarityService;
         private readonly TesseractService _tesseract;
         private readonly GenAiService _genAi;
         private readonly ElasticsearchService _elasticsearch;
+        private readonly IServiceScopeFactory _scopeFactory;
 
         private IConnection? _connection;
         private IModel? _channel;
 
-        public OCRWorker(ILogger<OCRWorker> logger, IMetaDataService metaDataService, IDocumentSimilarityService similarityService, GenAiService genAi, ElasticsearchService elasticsearch)
+        public OCRWorker(ILogger<OCRWorker> logger, IServiceScopeFactory scopeFactory, GenAiService genAi, ElasticsearchService elasticsearch)
         {
             _logger = logger;
+            _scopeFactory = scopeFactory;
             _minio = new MinioClient().WithEndpoint("minio:9000").WithCredentials("minioadmin", "minioadmin").Build();
-            _metaDataService = metaDataService;
-            _similarityService = similarityService;
             _genAi = genAi;
             _elasticsearch = elasticsearch;
             _tesseract = new TesseractService();
@@ -48,18 +46,31 @@ namespace PaperlessREST.OcrWorker.Services
             var consumer = new EventingBasicConsumer(_channel!);
             consumer.Received += async (_, ea) =>
             {
+                using var scope = _scopeFactory.CreateScope();
+
+                if (_scopeFactory == null)
+                {
+                    _logger.LogCritical("SCOPE FACTORY IS NULL – DI BROKEN");
+                    throw new NullReferenceException("_scopeFactory is null");
+                }
+
+                var metaDataService = scope.ServiceProvider.GetRequiredService<IMetaDataService>();
+                var similarityService = scope.ServiceProvider.GetRequiredService<IDocumentSimilarityService>();
+
                 try
                 {
                     var message = Encoding.UTF8.GetString(ea.Body.ToArray());
-                    var job = JsonSerializer.Deserialize<OCRJobDTO>(message) ?? throw new InvalidOperationException("Invalid OCR job payload");
+                    var job = JsonSerializer.Deserialize<OCRJobDTO>(message)
+                              ?? throw new InvalidOperationException("Invalid OCR job payload");
 
-                    await ProcessOcrJobAsync(job, stoppingToken);
-                    _channel!.BasicAck(ea.DeliveryTag, multiple: false);
+                    await ProcessOcrJobAsync(job, metaDataService, similarityService, stoppingToken);
+
+                    _channel!.BasicAck(ea.DeliveryTag, false);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "OCR job failed");
-                    _channel!.BasicNack(ea.DeliveryTag, multiple: false, requeue: false);
+                    _channel!.BasicNack(ea.DeliveryTag, false, false);
                 }
             };
 
@@ -89,7 +100,7 @@ namespace PaperlessREST.OcrWorker.Services
 
                     _connection = factory.CreateConnection();
                     _channel = _connection.CreateModel();
-
+                    
                     _channel.QueueDeclare(
                         queue: QueueName,
                         durable: true,
@@ -112,7 +123,7 @@ namespace PaperlessREST.OcrWorker.Services
             }
         }
 
-        private async Task ProcessOcrJobAsync(OCRJobDTO job, CancellationToken ct)
+        private async Task ProcessOcrJobAsync(OCRJobDTO job, IMetaDataService metaDataService, IDocumentSimilarityService similarityService, CancellationToken ct)
         {
             var documentId = Guid.Parse(job.DocumentId);
             var tempDir = Path.Combine(Path.GetTempPath(), documentId.ToString());
@@ -130,17 +141,21 @@ namespace PaperlessREST.OcrWorker.Services
                     return;
                 }
 
-                var meta = _metaDataService.GetMetaDataByGuid(documentId) ?? throw new InvalidOperationException($"Metadata not found for {documentId}");
-                /*
-                if (IsDuplicate(meta, ocrText))
-                    return;
-                */
-
+                var meta = metaDataService.GetMetaDataByGuid(documentId) ?? throw new InvalidOperationException($"Metadata not found for {documentId}");
                 var summary = await GenerateSummaryAsync(ocrText);
 
-                // meta.OcrText = ocrText;
+                meta.OcrText = ocrText;
                 meta.Summary = summary;
-                _metaDataService.UpdateMetadata(meta);
+
+                /**/
+                if (IsDuplicate(meta, ocrText, metaDataService, similarityService))
+                {
+                    metaDataService.UpdateMetadata(meta);
+                    return;
+                }
+                //*/
+
+                metaDataService.UpdateMetadata(meta);
 
                 _logger.LogInformation("OCR + summary stored for {Id}", documentId);
 
@@ -190,28 +205,26 @@ namespace PaperlessREST.OcrWorker.Services
 
             return sb.ToString();
         }
-        /*
-        private bool IsDuplicate(MetaData meta, string ocrText)
+        /**/
+        private bool IsDuplicate(MetaData meta, string ocrText, IMetaDataService metaDataService, IDocumentSimilarityService similarityService)
         {
-            var existingDocs = _metaDataService.GetAllMetaData().Where(d => d.Id != meta.Id && !string.IsNullOrWhiteSpace(d.OcrText));
+            var existingDocs = metaDataService
+                .GetAllMetaData()
+                .Where(d => d.Id != meta.Id && !string.IsNullOrWhiteSpace(d.OcrText))
+                .ToList();
 
             foreach (var doc in existingDocs)
             {
-                var similarity = _similarityService.CalculateSimilarity(ocrText, doc.OcrText!);
+                var similarity = similarityService.CalculateSimilarity(ocrText, doc.OcrText!);
                 if (similarity >= DuplicateThreshold)
                 {
                     meta.IsDuplicate = true;
-                    meta.Summary = "Duplicate document detected";
-                    _metaDataService.UpdateMetadata(meta);
-
-                    _logger.LogWarning("Duplicate detected: {NewId} ~ {ExistingId} ({Similarity:P})", meta.Id, doc.Id, similarity);
-
                     return true;
                 }
             }
             return false;
         }
-        */
+        //*/
         private async Task<string> GenerateSummaryAsync(string text)
         {
             try

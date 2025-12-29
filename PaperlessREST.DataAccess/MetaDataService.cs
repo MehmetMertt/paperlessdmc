@@ -60,7 +60,7 @@ namespace PaperlessREST.DataAccess.Service
 
         public IEnumerable<MetaData> GetAllMetaData()
         {
-            return _metadataRepository.GetAll();
+            return _metadataRepository.GetAll().AsNoTracking().ToList();
         }
 
         public void DeleteMetadata(Guid guid)

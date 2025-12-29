@@ -55,7 +55,7 @@ function createGrouping(detail, data){
     return groupingDiv;
 }
 
-function addNote(documentID, fileName, fileCreationDate, fileModificationDate, fileSize, fileType, fileSummary){
+function addNote(documentID, fileName, fileCreationDate, fileModificationDate, fileSize, fileType, fileSummary, isDuplicate){
     var documentsWrapper = document.getElementById("documents");
     document.getElementById("no-documents").classList.add("hide");
 
@@ -69,6 +69,10 @@ function addNote(documentID, fileName, fileCreationDate, fileModificationDate, f
     var documentTitleH3 = document.createElement("h3");
     documentTitleH3.className = "document-filename";
     documentTitleH3.innerText = fileName;
+    if(isDuplicate){
+        doc.className = "document duplicate";
+        documentTitleH3.innerText = "(Duplicate)\u00A0" + fileName;
+    }
     documentTitleH3.onclick = () => showDetails(documentID);
 
     var buttonsGroupingDiv = document.createElement("div");

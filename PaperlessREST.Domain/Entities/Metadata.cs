@@ -23,8 +23,8 @@ namespace PaperlessREST.Domain.Entities
         public string? Summary { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime ModifiedLast { get; set; }
-        // public string? OcrText { get; set; } // for duplicate findings
-        // public bool IsDuplicate { get; set; } // also for duplicate findings
+        public string? OcrText { get; set; } // for duplicate findings
+        public bool IsDuplicate { get; set; } // also for duplicate findings
         public string ObjectName { get; set; } // for minio
     }
 }

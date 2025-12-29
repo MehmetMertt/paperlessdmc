@@ -6,8 +6,12 @@ async function fetchDocuments(){
     if(result.length < 1)
         return;
 
-    for(let i = 0; i < result.length; i++)
-        addNote(result[i].id, result[i].title, result[i].createdOn, result[i].modifiedLast, result[i].fileSize, result[i].fileType, result[i].summary);
+    for(let i = 0; i < result.length; i++){
+        let summary = result[i].summary;
+        if(result[i].summary === "")
+            summary = result[i].ocrText;
+        addNote(result[i].id, result[i].title, new Date(result[i].createdOn).toLocaleString("en-EN"), new Date(result[i].modifiedLast).toLocaleString("en-EN"), result[i].fileSize, result[i].fileType, summary, result[i].isDuplicate);
+    }
 
     return result;
 }
@@ -23,7 +27,7 @@ async function uploadFile(){
         try{
             var lastModified = new Date(fileInput.files[i].lastModified).toLocaleString("en-EN")
             await createDocument(document.getElementById("file-upload").files[i], id, fileInput.files[i].name, lastModified, lastModified, fileInput.files[i].size, fileInput.files[i].type, "No Summary");
-            addNote(id, fileInput.files[i].name, lastModified, lastModified, fileInput.files[i].size, fileInput.files[i].type, "Waiting for OCR to finish ...");
+            addNote(id, fileInput.files[i].name, lastModified, lastModified, fileInput.files[i].size, fileInput.files[i].type, "Waiting for OCR to finish ...", false);
         }catch(error){
             console.error("Upload failed:", error);
             alert(`Upload failed for: "${fileInput.files[i].name}"`);
