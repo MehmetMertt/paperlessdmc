@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PaperlessREST.Application;
+using PaperlessREST.Infrastructure;
 using RabbitMQ.Client;
 using System.Text;
 
-public class RabbitMqService : IMessageQueue, IDisposable
+public class RabbitMqService : IMessageQueue, IRabbitMqService
 {
     private readonly IConnection _connection;
     private readonly IModel _channel; // lightweight communication option for sending and receiving messages
@@ -41,5 +42,21 @@ public class RabbitMqService : IMessageQueue, IDisposable
     {
         _channel?.Dispose();
         _connection?.Dispose();
+    }
+
+    public void Publish(string queue, string message)
+    {
+        var body = Encoding.UTF8.GetBytes(message);
+
+        _channel.QueueDeclare(
+            queue: queue,
+            durable: true,
+            exclusive: false,
+            autoDelete: false);
+
+        _channel.BasicPublish(
+            exchange: "",
+            routingKey: queue,
+            body: body);
     }
 }

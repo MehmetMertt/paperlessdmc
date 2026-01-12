@@ -39,7 +39,7 @@ builder.Services.AddControllers(); // registers MVC-controller, without this aps
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<RabbitMqService>();
+builder.Services.AddSingleton<IRabbitMqService, RabbitMqService>();
 //builder.Services.AddHostedService<OcrWorker>();   // registers ocr worker in the background and starts automatically with the start of the api
 builder.Services.AddSingleton<IMinioClient>(sp =>  //Minio Client for Document collection
 {
@@ -84,3 +84,5 @@ app.UseAuthorization();
 app.MapControllers();      // connects controller endpoints through routing
 app.MapGet("/", () => "Welcome to MinIO API");
 app.Run();
+
+public partial class Program { }
